@@ -16,6 +16,7 @@ import { DeposittypeModule } from './deposittype/deposittype.module';
 import { AdviserModule } from './adviser/adviser.module';
 import { VerificationModule } from './verification/verification.module';
 import { FatcaModule } from './fatca/fatca.module';
+import { WholesaleModule } from './wholesale/wholesale.module';
 
 @Module({
   imports: [
@@ -33,7 +34,8 @@ import { FatcaModule } from './fatca/fatca.module';
     DeposittypeModule,
     AdviserModule,
     VerificationModule,
-    FatcaModule
+    FatcaModule,
+    WholesaleModule
   ],
   controllers: [AppController],
   providers: [AppService],
