@@ -1,18 +1,28 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
 
-export type InvestorBDocument = InvestorB & Document;
+export type FatcaDocument = Fatca & Document;
 
 @Schema()
-export class InvestorB {
+export class Fatca {
     @Prop()
-    Title: string;
+    isUscitizen: boolean;
+    @Prop()
+    usTIN: string;
+    @Prop()
+    usTIN2: string;
+    @Prop()
+    isTrustUS: boolean;
+    @Prop()
+    isTrustInst: boolean;
+    @Prop()
+    GIIN: string;
     @Prop()
     GivenName: string;
     @Prop()
     SurName: string;
     @Prop()
-    birth: Date;
+    USTIN: string;
     @Prop()
     Email: string;
     @Prop()
@@ -24,15 +34,7 @@ export class InvestorB {
     @Prop()
     PostCode: string;
     @Prop()
-    country: string;
-    @Prop()
-    TFNcode: string;
-    @Prop()
-    license: string;
-    @Prop()
-    political: boolean;
-    @Prop()
     UserId: string;
 };
 
-export const InvestorBSchema = SchemaFactory.createForClass(InvestorB);
+export const FatcaSchema = SchemaFactory.createForClass(Fatca);

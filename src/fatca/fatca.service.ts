@@ -2,25 +2,33 @@ import { Injectable } from '@nestjs/common';
 import { CreateFatcaDto } from './dto/create-fatca.dto';
 import { UpdateFatcaDto } from './dto/update-fatca.dto';
 
+import { InjectModel } from '@nestjs/mongoose';
+import { Model } from 'mongoose';
+import { Fatca, FatcaDocument } from './schema/fatca.schema';
+
 @Injectable()
 export class FatcaService {
-  create(createFatcaDto: CreateFatcaDto) {
-    return 'This action adds a new fatca';
+
+  constructor(@InjectModel(Fatca.name) private readonly FatcaModel: Model<FatcaDocument>) {}
+
+  async create(createFatcaDto: CreateFatcaDto) {
+    const Fatca = new this.FatcaModel(createFatcaDto);
+    return Fatca.save();
   }
 
-  findAll() {
-    return `This action returns all fatca`;
+  async findAll(): Promise <FatcaDocument[]> {
+    return this.FatcaModel.find().exec();
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} fatca`;
+  async findOne(id: number) {
+    return this.FatcaModel.findById(id);
   }
 
-  update(id: number, updateFatcaDto: UpdateFatcaDto) {
-    return `This action updates a #${id} fatca`;
+  async update(id: number, updateFatcaDto: UpdateFatcaDto) {
+    return this.FatcaModel.findByIdAndUpdate(id, updateFatcaDto);
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} fatca`;
+  async remove(id: number) {
+    return this.FatcaModel.findByIdAndRemove(id);
   }
 }
