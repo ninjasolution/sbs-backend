@@ -17,6 +17,7 @@ import { AdviserModule } from './adviser/adviser.module';
 import { VerificationModule } from './verification/verification.module';
 import { FatcaModule } from './fatca/fatca.module';
 import { WholesaleModule } from './wholesale/wholesale.module';
+import { DeclarationModule } from './declaration/declaration.module';
 
 @Module({
   imports: [
@@ -35,7 +36,8 @@ import { WholesaleModule } from './wholesale/wholesale.module';
     AdviserModule,
     VerificationModule,
     FatcaModule,
-    WholesaleModule
+    WholesaleModule,
+    DeclarationModule
   ],
   controllers: [AppController],
   providers: [AppService],
