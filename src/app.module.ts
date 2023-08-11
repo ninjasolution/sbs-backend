@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { MongooseModule } from '@nestjs/mongoose';
+
 import { UsersModule } from './users/users.module';
 import { ContactdetailsModule } from './contactdetails/contactdetails.module';
 import { InvestmentsModule } from './investments/investments.module';
@@ -18,10 +19,13 @@ import { VerificationModule } from './verification/verification.module';
 import { FatcaModule } from './fatca/fatca.module';
 import { WholesaleModule } from './wholesale/wholesale.module';
 import { DeclarationModule } from './declaration/declaration.module';
-
+import { AuthModule } from './auth/auth.module';
+import { UserModule } from './user/user.module';
+require('dotenv').config();
+console.log('^-^', process.env.MONGO_URI);
 @Module({
   imports: [
-    MongooseModule.forRoot('mongodb://localhost:27017/SBSau'),
+    MongooseModule.forRoot(process.env.MONGO_URI),
     UsersModule,
     ContactdetailsModule,
     InvestmentsModule,
@@ -37,7 +41,9 @@ import { DeclarationModule } from './declaration/declaration.module';
     VerificationModule,
     FatcaModule,
     WholesaleModule,
-    DeclarationModule
+    DeclarationModule,
+    AuthModule,
+    UserModule
   ],
   controllers: [AppController],
   providers: [AppService],
