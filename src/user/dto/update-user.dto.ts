@@ -2,8 +2,7 @@ import { IsNotEmpty, MinLength, MaxLength, IsEmail, IsString } from 'class-valid
 import { ApiProperty } from '@nestjs/swagger';
 
 export class UpdateUserDto {
-
-    // Name
+    // User id
     @ApiProperty({
       example: 'Lorem..',
       description: 'The userId of the User',
@@ -17,8 +16,7 @@ export class UpdateUserDto {
     @MaxLength(255)
     readonly userId: string;
 
-    
-    // Name
+    // FirstName
     @ApiProperty({
       example: 'Lorem..',
       description: 'The name of the User',
@@ -30,17 +28,17 @@ export class UpdateUserDto {
     @IsString()
     @MinLength(1)
     @MaxLength(255)
-    readonly name: string;
+    readonly FirstName: string;
 
-    // lastName
+    // SurName
     @ApiProperty({
       example: 'Lore ipsum',
-      description: 'The last name of the User',
+      description: 'The Surname of the User',
       format: 'string',
     })
     @IsString()
     @MaxLength(255)
-    readonly lastName: string;
+    readonly SurName: string;
 
     // Email
     @ApiProperty({
@@ -57,14 +55,6 @@ export class UpdateUserDto {
     @MaxLength(255)
     @IsEmail()
     readonly email: string;
-
-    @ApiProperty({
-      example: '2874596284369',
-      description: 'The Id of the Retailer',
-      format: 'string',
-    })
-    @MaxLength(255)
-    readonly retailerId: string;
 
     @ApiProperty({
       example: '2874596284369',
@@ -98,14 +88,5 @@ export class UpdateUserDto {
     @IsString()
     @MaxLength(255)
     readonly gender: string;
-
-    @ApiProperty({
-      example: '2874596284369',
-      description: 'The phone ',
-      format: 'string',
-    })
-    @IsString()
-    @MaxLength(255)
-    readonly phone: string;
 
   }

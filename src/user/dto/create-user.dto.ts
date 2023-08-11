@@ -3,21 +3,21 @@ import { ApiProperty } from '@nestjs/swagger';
 
 export class CreateUserDto {
 
-    // Name
+    // FirstName
     @ApiProperty({
       example: 'Lorem..',
-      description: 'The name of the User',
+      description: 'The first name of the User',
       format: 'string',
     })
-    readonly name: string;
+    readonly FirstName: string;
 
-    // lastName
+    // SurName
     @ApiProperty({
       example: 'Lore ipsum',
-      description: 'The last name of the User',
+      description: 'The Surname of the User',
       format: 'string',
     })
-    readonly lastName: string;
+    readonly SurName: string;
 
     // Email
     @ApiProperty({
@@ -34,32 +34,6 @@ export class CreateUserDto {
     @MaxLength(255)
     @IsEmail()
     readonly email: string;
-
-     // image
-     @ApiProperty({
-      example: 'Lore ipsum',
-      description: 'The image of the User',
-      format: 'string',
-    })
-    @IsString()
-    readonly image: string;
-
-    @ApiProperty({
-      example: 'imageKey change me!',
-      description: 'The imageKey of the User',
-      format: 'string',
-    })
-    @IsString()
-    readonly imageKey: string;
-
-    @ApiProperty({
-      example: '2874596284369',
-      description: 'The Id of the Retailer',
-      format: 'string',
-    })
-    @IsString()
-    @MaxLength(255)
-    readonly retailerId: string;
 
     // Password
     @ApiProperty({
@@ -87,10 +61,4 @@ export class CreateUserDto {
       description: 'The gender ',
     })
     readonly gender: string;
-
-    @ApiProperty({
-      example: '2874596284369',
-      description: 'The phone ',
-    })
-    readonly phone: string;
   }

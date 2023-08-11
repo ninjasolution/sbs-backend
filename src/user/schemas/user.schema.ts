@@ -26,6 +26,12 @@ import {
     SurName: string;
   
     @Prop({
+        maxlength: 255,
+        trim:true
+    })
+    displayName: string;
+  
+    @Prop({
         lowercase: true,
         validate: isEmail,
         maxlength: 255,

@@ -49,7 +49,7 @@ export class UserController {
     @ApiOperation({summary: 'Register user',})
     @ApiCreatedResponse({})
     @UseGuards(AuthGuard('jwt'))
-    @Roles('admin')
+    // @Roles('admin')
     async register(@Body() createUserDto: CreateUserDto) {
         return await this.userService.create(createUserDto);
     }

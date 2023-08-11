@@ -5,7 +5,7 @@ import { LoginUserDto } from './dto/login-user.dto';
 import { Injectable, BadRequestException, NotFoundException, ConflictException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { v4 } from 'node_modules/uuid';
+import { v4 } from 'uuid';
 import { addHours } from 'date-fns';
 import * as bcrypt from 'bcrypt';
 import { CreateForgotPasswordDto } from './dto/create-forgot-password.dto';
@@ -55,7 +55,7 @@ export class UserService {
         const user = await this.findByVerification(verifyUuidDto.verification);
         await this.setUserAsVerified(user);
         return {
-            name: user.name,
+            name: user.displayName,
             email: user.email,
             accessToken: await this.authService.createAccessToken(user._id),
             refreshToken: await this.authService.createRefreshToken(req, user._id),
@@ -81,13 +81,10 @@ export class UserService {
         var expiration_time = date2;
 
         return {
-            name: user.name,
             displayName: user.displayName,
             email: user.email,
             roles: user.roles,
             exp: expiration_time,
-            retailerId: user.retailerId,
-            image: user.image,
             accessToken: await this.authService.createAccessToken(user._id),
             refreshToken: await this.authService.createRefreshToken(req, user._id),
         };
@@ -177,8 +174,6 @@ export class UserService {
         const user = await this.findUserByEmail(changeUserImageDto.email);
       
         this.isUserBlocked(user);
-        user.image = changeUserImageDto.image;
-        user.imageKey = changeUserImageDto.imageKey;
     
         await this.userModel.updateOne({email: changeUserImageDto.email}, user);
        
@@ -197,16 +192,13 @@ export class UserService {
             await this.isEmailUnique(updateUserDto.email);
             user.email = updateUserDto.email;
         }
-        if(updateUserDto.retailerId != ""){
-            user.retailerId = updateUserDto.retailerId;
-        }
         if(updateUserDto.displayName != user.displayName){
             await this.isDisplayNameUnique(updateUserDto.displayName);
             user.displayName = updateUserDto.displayName;
         }
 
-        user.name = updateUserDto.name; 
-        user.lastName = updateUserDto.lastName;
+        user.FirstName = updateUserDto.FirstName; 
+        user.SurName = updateUserDto.SurName;
         user.roles = updateUserDto.roles;
         
 
