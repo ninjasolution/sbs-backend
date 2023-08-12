@@ -34,7 +34,7 @@ export class MailService {
       const message = {
         from,
         to: `${data.user.email}`,
-        subject: `Verify Account - CannaBoss`,
+        subject: `Verify Account - SBS`,
         html: obj.getHtmlTemplate(),
         replyTo: from,
         headers: {
@@ -85,7 +85,7 @@ export class MailService {
       const message = {
         from,
         to: `${data.recovery.email}`,
-        subject: `Account Recovery - CannaBoss`,
+        subject: `Account Recovery - SBS`,
         html: obj.getHtmlTemplate(),
         replyTo: from,
         headers: {
@@ -235,7 +235,7 @@ export class MailService {
 
       const message = {
         from,
-        to: `jordan.blazevich@cannaboss.ca`,
+        to: `jordan.blazevich@SBS.au`,
         subject: `Woocommerce has reported a review on`,
         html: htmlError,
         replyTo: from,
@@ -279,7 +279,7 @@ export class MailService {
 
       const message = {
         from,
-        to: `jordan.blazevich@cannaboss.ca`,
+        to: `jordan.blazevich@SBS.au`,
         subject: `Woocommerce has reported a review on`,
         html: htmlError,
         replyTo: from,
