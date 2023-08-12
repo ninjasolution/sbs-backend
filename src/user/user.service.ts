@@ -1,6 +1,7 @@
 import { ResetPasswordDto } from './dto/reset-password.dto';
 import { Request } from 'express';
 import { AuthService } from './../auth/auth.service';
+import { MailService } from './../services/mail.service';
 import { LoginUserDto } from './dto/login-user.dto';
 import { Injectable, BadRequestException, NotFoundException, ConflictException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
@@ -30,6 +31,7 @@ export class UserService {
         @InjectModel('User') private readonly userModel: Model<User>,
         @InjectModel('ForgotPassword') private readonly forgotPasswordModel: Model<ForgotPassword>,
         private readonly authService: AuthService,
+        public mailService: MailService,
         ) {}
 
     // ┌─┐┬─┐┌─┐┌─┐┌┬┐┌─┐  ┬ ┬┌─┐┌─┐┬─┐
@@ -44,8 +46,17 @@ export class UserService {
         await this.isEmailUnique(user.email);
         await this.isDisplayNameUnique(user.displayName);
         this.setRegistrationInfo(user);
+        user.roles = ["customer"];
+        var veirification = user.verification;
         await user.save();
-        return this.buildRegistrationInfo(user);
+        let data = {
+            user: user,
+            link: veirification
+        }
+        const status = await this.mailService.verifyAccount(data).then((result) => {
+            return result;
+        });
+        return this.buildRegistrationInfo(user, status);
     }
 
     // ┬  ┬┌─┐┬─┐┬┌─┐┬ ┬  ┌─┐┌┬┐┌─┐┬┬
@@ -232,11 +243,13 @@ export class UserService {
         user.verificationExpires = addHours(new Date(), this.HOURS_TO_VERIFY);
     }
 
-    private buildRegistrationInfo(user): any {
+    private buildRegistrationInfo(user, email_status): any {
         const userRegistrationInfo = {
             name: user.name,
             email: user.email,
             verified: user.verified,
+            email_status: email_status,
+            result: "success"
         };
         return userRegistrationInfo;
     }

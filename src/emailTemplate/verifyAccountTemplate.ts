@@ -1,0 +1,73 @@
+/**
+ * The VerifyAccountTemplate class describes the email template that is used when populating an email address verification email.
+ * 
+ */
+export class VerifyAccountTemplate {
+    html: String = "";
+    consumer_uri = process.env.CONSUMER_URI;
+
+    constructor(data: any) { 
+     this.html = `<head>
+     <meta charset="utf-8"/>
+     <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+     </head>
+     <body>
+     
+     <table align="center" style="border: none; border-collapse: collapse; margin: auto; display: block; width: 600px; table-layout: auto;">
+         <tbody>
+             <tr>
+                 <th>
+                     <img src="https://sbsau.s3.au-central-1.amazonaws.com/email-template-header.png" style="margin: auto; display: block; width: 600px;">
+                 </th>
+             </tr>
+             <tr>
+                 <th style="padding-top: 40px;">
+                     <span style="text-align: center; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI'; font-size: 30px; color: #186d35; font-weight: bold;">Welcome to CannaBoss!</span>
+                 </th>
+             </tr>
+             <tr>
+                 <th style="padding-top: 5px;">
+                     <span style="text-align: center; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI'; font-size: 21px; color: #186d35; font-weight: lighter;">We're excited to have you.</span>
+                 </th>
+             </tr>
+             <tr>
+                 <th style="padding-top: 40px; padding-bottom: 40px;">
+                     <span style="padding-top: 15px; text-align: center; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI'; font-size: 18px; color: #186d35; font-weight: lighter;">We just need you to verify that this is the right email for you. <br/> If this is you, click below to verify your email address.</span>
+                 </th>
+             </tr>
+             <tr>
+                 <td>
+                     <table border="0" cellspacing="0" cellpadding="0" align="center">
+                         <tr>
+                             <td align="center" style="padding: 14px; border-radius: 4px; background-color: #186d35;">
+                                     <a href="${this.consumer_uri}/customer/validation/${data.link}" target="_blank" style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI'; text-decoration: none; font-size: 20px; line-height: 16px; color: white; border-radius: 4px; overflow: visible; font-weight:bold; ">Verify Email</a>
+                             </td>
+                         </tr>
+                     </table>
+                 </td>
+             </tr>
+             <tr>
+                 <th style="padding-top: 35px;">
+                     <span style="padding-top: 15px; text-align: center; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI'; font-size: 15px; color: #186d35; font-weight: lighter;">Button not working? Paste this link into your browser instead: <br/>${this.consumer_uri}/customer/validation/${data.link}</span>
+                 </th>
+             </tr>
+             <tr>
+                 <th style="padding-top: 25px;">
+                     <span style="padding-top: 15px; text-align: center; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI'; font-size: 15px; color: #186d35; font-weight: lighter;">Not you? Ignore this message or contact our support team at support@sbs.au with any questions</span>
+                 </th>
+             </tr>
+             <tr >
+                 <th style="padding-top: 75px;">
+                     <span style="text-align: center; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI'; font-size: 15px; color: #186d35; font-weight: lighter;">© 2020, SBS. All rights reserved.</span>
+                 </th>
+             </tr>
+         </tbody>
+     </table>
+     </body>`; 
+    }
+    
+    getHtmlTemplate(){
+        return this.html;
+    }
+}

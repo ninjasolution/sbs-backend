@@ -3,6 +3,7 @@ import { UserSchema } from './schemas/user.schema';
 import { Module } from '@nestjs/common';
 import { UserController } from './user.controller';
 import { UserService } from './user.service';
+import { MailService } from './../services/mail.service';
 import { AuthModule } from 'src/auth/auth.module';
 import { ForgotPasswordSchema } from './schemas/forgot-password.schema';
 
@@ -13,6 +14,6 @@ import { ForgotPasswordSchema } from './schemas/forgot-password.schema';
     AuthModule,
   ],
   controllers: [UserController],
-  providers: [UserService],
+  providers: [UserService, MailService],
 })
 export class UserModule {}
