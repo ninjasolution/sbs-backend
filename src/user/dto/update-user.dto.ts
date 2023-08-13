@@ -28,7 +28,7 @@ export class UpdateUserDto {
     @IsString()
     @MinLength(1)
     @MaxLength(255)
-    readonly FirstName: string;
+    readonly firstname: string;
 
     // SurName
     @ApiProperty({
@@ -38,7 +38,7 @@ export class UpdateUserDto {
     })
     @IsString()
     @MaxLength(255)
-    readonly SurName: string;
+    readonly surname: string;
 
     // Email
     @ApiProperty({
@@ -78,7 +78,7 @@ export class UpdateUserDto {
     })
     @IsString()
     @MaxLength(255)
-    readonly displayName: string;
+    readonly displayname: string;
 
     @ApiProperty({
       example: '2874596284369',

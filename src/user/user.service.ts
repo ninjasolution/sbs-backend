@@ -32,31 +32,37 @@ export class UserService {
         @InjectModel('ForgotPassword') private readonly forgotPasswordModel: Model<ForgotPassword>,
         private readonly authService: AuthService,
         public mailService: MailService,
-        ) {}
+    ) { }
 
     // ┌─┐┬─┐┌─┐┌─┐┌┬┐┌─┐  ┬ ┬┌─┐┌─┐┬─┐
     // │  ├┬┘├┤ ├─┤ │ ├┤   │ │└─┐├┤ ├┬┘
     // └─┘┴└─└─┘┴ ┴ ┴ └─┘  └─┘└─┘└─┘┴└─
     async create(createUserDto: CreateUserDto): Promise<User> {
-        const user = new this.userModel(createUserDto);
-        if(!user.displayName){
-            user.displayName = user.email;
+        try {
+            // console.log('^-^', createUserDto);
+            const user = new this.userModel(createUserDto);
+            if (!user.displayname) {
+                user.displayname = user.email;
+            }
+
+            await this.isEmailUnique(user.email);
+            await this.isDisplayNameUnique(user.displayname);
+            this.setRegistrationInfo(user);
+            user.roles = ["customer"];
+            var veirification = user.verification;
+            await user.save();
+            let data = {
+                user: user,
+                link: veirification
+            }
+            console.log('^-^', data);
+            const status = await this.mailService.verifyAccount(data).then((result) => {
+                return result;
+            });
+            return this.buildRegistrationInfo(user, status);
+        } catch (error) {
+            console.error(error);
         }
-        
-        await this.isEmailUnique(user.email);
-        await this.isDisplayNameUnique(user.displayName);
-        this.setRegistrationInfo(user);
-        user.roles = ["customer"];
-        var veirification = user.verification;
-        await user.save();
-        let data = {
-            user: user,
-            link: veirification
-        }
-        const status = await this.mailService.verifyAccount(data).then((result) => {
-            return result;
-        });
-        return this.buildRegistrationInfo(user, status);
     }
 
     // ┬  ┬┌─┐┬─┐┬┌─┐┬ ┬  ┌─┐┌┬┐┌─┐┬┬
@@ -66,7 +72,7 @@ export class UserService {
         const user = await this.findByVerification(verifyUuidDto.verification);
         await this.setUserAsVerified(user);
         return {
-            name: user.displayName,
+            name: user.displayname,
             email: user.email,
             accessToken: await this.authService.createAccessToken(user._id),
             refreshToken: await this.authService.createRefreshToken(req, user._id),
@@ -78,21 +84,21 @@ export class UserService {
     // ┴─┘└─┘└─┘┴┘└┘
     async login(req: Request, loginUserDto: LoginUserDto) {
         const user = await this.findUserByEmail(loginUserDto.email);
-        if(!user.displayName){
-            user.displayName = user.email;
+        if (!user.displayname) {
+            user.displayname = user.email;
         }
         this.isUserBlocked(user);
         await this.checkPassword(loginUserDto.password, user);
         await this.passwordsAreMatch(user);
         this.isRoleBlocked(user);
 
-        var date = new Date (),
-        date2 = new Date ( date );
-        date2.setMinutes ( date.getMinutes() + parseInt(process.env.JWT_EXPIRATION_MINUTES) );
+        var date = new Date(),
+            date2 = new Date(date);
+        date2.setMinutes(date.getMinutes() + parseInt(process.env.JWT_EXPIRATION_MINUTES));
         var expiration_time = date2;
 
         return {
-            displayName: user.displayName,
+            displayname: user.displayname,
             email: user.email,
             roles: user.roles,
             exp: expiration_time,
@@ -164,66 +170,66 @@ export class UserService {
 
     //UPDATE RETAILER PASSWORD
     async updatePassword(req: Request, changeUserPasswordDto: ChangeUserPasswordDto) {
-        
-         const user = await this.findUserByEmail(changeUserPasswordDto.email);
-       
-         this.isUserBlocked(user);
-         await this.checkPassword(changeUserPasswordDto.password, user);
-         await this.passwordsAreMatch(user);
-         const new_password_hashed = await bcrypt.hash(changeUserPasswordDto.newPassword, 10);
-         user.password = new_password_hashed;
-     
-         await this.userModel.updateOne({email: changeUserPasswordDto.email}, user);
-        
-         return this.buildUpdatingPasswordInfo(user);
+
+        const user = await this.findUserByEmail(changeUserPasswordDto.email);
+
+        this.isUserBlocked(user);
+        await this.checkPassword(changeUserPasswordDto.password, user);
+        await this.passwordsAreMatch(user);
+        const new_password_hashed = await bcrypt.hash(changeUserPasswordDto.newPassword, 10);
+        user.password = new_password_hashed;
+
+        await this.userModel.updateOne({ email: changeUserPasswordDto.email }, user);
+
+        return this.buildUpdatingPasswordInfo(user);
 
     }
 
     //UPDATE USER IMAGE
     async updateUserImage(req: Request, changeUserImageDto: ChangeUserImagedDto) {
-        
-        const user = await this.findUserByEmail(changeUserImageDto.email);
-      
-        this.isUserBlocked(user);
-    
-        await this.userModel.updateOne({email: changeUserImageDto.email}, user);
-       
-        return {update: true};
 
-   }
+        const user = await this.findUserByEmail(changeUserImageDto.email);
+
+        this.isUserBlocked(user);
+
+        await this.userModel.updateOne({ email: changeUserImageDto.email }, user);
+
+        return { update: true };
+
+    }
 
     //UPDATE USER
     async updateUser(req: Request, updateUserDto: UpdateUserDto) {
         const user = await this.userModel.findById(updateUserDto.userId);
-        if(updateUserDto.password!=""){
+        if (updateUserDto.password != "") {
             const new_password_hashed = await bcrypt.hash(updateUserDto.password, 10);
             user.password = new_password_hashed;
         }
-        if(updateUserDto.email != user.email){
+        if (updateUserDto.email != user.email) {
             await this.isEmailUnique(updateUserDto.email);
             user.email = updateUserDto.email;
         }
-        if(updateUserDto.displayName != user.displayName){
-            await this.isDisplayNameUnique(updateUserDto.displayName);
-            user.displayName = updateUserDto.displayName;
+        if (updateUserDto.displayname != user.displayname) {
+            await this.isDisplayNameUnique(updateUserDto.displayname);
+            user.displayname = updateUserDto.displayname;
         }
 
-        user.FirstName = updateUserDto.FirstName; 
-        user.SurName = updateUserDto.SurName;
+        user.firstname = updateUserDto.firstname;
+        user.surname = updateUserDto.surname;
         user.roles = updateUserDto.roles;
-        
 
-        await this.userModel.updateOne({_id: updateUserDto.userId}, user);
-       
-        return {update: true};
-        
-   }
+
+        await this.userModel.updateOne({ _id: updateUserDto.userId }, user);
+
+        return { update: true };
+
+    }
     // ┌─┐┬─┐   ┌┬┐┌─┐┌─┐┌┬┐┌─┐┌┬┐  ┌─┐┌─┐┬─┐┬  ┬┬┌─┐┌─┐
     // ├─┘├┬┘    │ ├┤ │   │ ├┤  ││  └─┐├┤ ├┬┘└┐┌┘││  ├┤
     // ┴  ┴└─    ┴ └─┘└─┘ ┴ └─┘─┴┘  └─┘└─┘┴└─ └┘ ┴└─┘└─┘
     findAll(): any {
-        return {hello: 'world'};
-      }
+        return { hello: 'world' };
+    }
 
     // ********************************************
     // ╔═╗╦═╗╦╦  ╦╔═╗╔╦╗╔═╗  ╔╦╗╔═╗╔╦╗╦ ╦╔═╗╔╦╗╔═╗
@@ -232,7 +238,7 @@ export class UserService {
     // ********************************************
 
     private async isEmailUnique(email: string) {
-        const user = await this.userModel.findOne({email: email});
+        const user = await this.userModel.findOne({ email: email });
         if (user) {
             throw new BadRequestException('Email must be unique.');
         }
@@ -245,7 +251,7 @@ export class UserService {
 
     private buildRegistrationInfo(user, email_status): any {
         const userRegistrationInfo = {
-            name: user.name,
+            name: user.displayname,
             email: user.email,
             verified: user.verified,
             email_status: email_status,
@@ -264,7 +270,7 @@ export class UserService {
     }
 
     private async findByVerification(verification: string): Promise<User> {
-        const user = await this.userModel.findOne({verification, verified: false, verificationExpires: {$gt: new Date()}});
+        const user = await this.userModel.findOne({ verification, verified: false, verificationExpires: { $gt: new Date() } });
         if (!user) {
             throw new BadRequestException('Bad request.');
         }
@@ -272,7 +278,7 @@ export class UserService {
     }
 
     private async findByEmail(email: string): Promise<User> {
-        const user = await this.userModel.findOne({email, verified: true});
+        const user = await this.userModel.findOne({ email, verified: true });
         if (!user) {
             throw new NotFoundException('Email not found.');
         }
@@ -285,9 +291,9 @@ export class UserService {
     }
 
     private async findUserByEmail(email: string): Promise<User> {
-        const user = await this.userModel.findOne({email, verified: true});
+        const user = await this.userModel.findOne({ email, verified: true });
         if (!user) {
-          throw new NotFoundException('Wrong email or password.');
+            throw new NotFoundException('Wrong email or password.');
         }
         return user;
     }
@@ -328,7 +334,7 @@ export class UserService {
     }
 
     private async passwordsAreMatch(user) {
-        user.loginAttempts = 0 ;
+        user.loginAttempts = 0;
         await user.save();
     }
 
@@ -349,7 +355,7 @@ export class UserService {
             verification: verifyUuidDto.verification,
             firstUsed: false,
             finalUsed: false,
-            expires: {$gt: new Date()},
+            expires: { $gt: new Date() },
         });
         if (!forgotPassword) {
             throw new BadRequestException('Bad request.');
@@ -370,7 +376,7 @@ export class UserService {
             email: resetPasswordDto.email,
             firstUsed: true,
             finalUsed: false,
-            expires: {$gt: new Date()},
+            expires: { $gt: new Date() },
         });
         if (!forgotPassword) {
             throw new BadRequestException('Bad request.');
@@ -392,8 +398,8 @@ export class UserService {
         await user.save();
     }
 
-    private async isDisplayNameUnique(displayName: string) {
-        const user = await this.userModel.findOne({displayName: displayName});
+    private async isDisplayNameUnique(displayname: string) {
+        const user = await this.userModel.findOne({ displayname: displayname });
         if (user) {
             throw new BadRequestException('Display Name must be unique.');
         }

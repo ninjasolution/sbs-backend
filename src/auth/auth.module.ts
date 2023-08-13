@@ -4,13 +4,13 @@ import { JwtStrategy } from './strategies/jwt.strategy';
 import { PassportModule } from '@nestjs/passport';
 import { JwtModule } from '@nestjs/jwt';
 import { MongooseModule } from '@nestjs/mongoose';
-import { UsersSchema } from '../users/schema/users.schema';
+import { UserSchema } from '../user/schema/user.schema';
 import { RefreshTokenSchema } from './schemas/refresh-token.schema';
 
 @Module({
   imports: [
     MongooseModule.forFeature([
-      { name: 'User', schema: UsersSchema },
+      { name: 'User', schema: UserSchema },
       { name: 'RefreshToken', schema: RefreshTokenSchema },
     ]),
     PassportModule,

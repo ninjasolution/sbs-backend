@@ -5,7 +5,7 @@ import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { ValidationPipe } from '@nestjs/common';
 import { getRawBodyOnRequest } from './get-raw-body-on-request'
 import * as dotenv from 'dotenv';
-import { UsersModule } from './users/users.module';
+
 import { ContactdetailsModule } from './contactdetails/contactdetails.module';
 import { InvestmentsModule } from './investments/investments.module';
 import { InvestorAModule } from './investor-a/investor-a.module';
@@ -49,7 +49,6 @@ async function bootstrap() {
     .build();
   const document = SwaggerModule.createDocument(app, options, {
     include: [
-      UsersModule,
       ContactdetailsModule,
       InvestmentsModule,
       InvestorAModule,

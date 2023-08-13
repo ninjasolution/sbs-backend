@@ -3,7 +3,6 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { MongooseModule } from '@nestjs/mongoose';
 
-import { UsersModule } from './users/users.module';
 import { ContactdetailsModule } from './contactdetails/contactdetails.module';
 import { InvestmentsModule } from './investments/investments.module';
 import { InvestorAModule } from './investor-a/investor-a.module';
@@ -26,7 +25,6 @@ console.log('^-^', process.env.MONGO_URI);
 @Module({
   imports: [
     MongooseModule.forRoot(process.env.MONGO_URI),
-    UsersModule,
     ContactdetailsModule,
     InvestmentsModule,
     InvestorAModule,

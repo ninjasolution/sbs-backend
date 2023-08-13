@@ -45,12 +45,14 @@ export class UserController {
      *
      */
     @Post()
-    @HttpCode(HttpStatus.CREATED)
+    @HttpCode(HttpStatus.OK)
     @ApiOperation({summary: 'Register user',})
-    @ApiCreatedResponse({})
-    @UseGuards(AuthGuard('jwt'))
+    @ApiOkResponse({})
+    // @ApiCreatedResponse({})
+    // @UseGuards(AuthGuard('jwt'))
     // @Roles('admin')
     async register(@Body() createUserDto: CreateUserDto) {
+        // console.log('^-^', createUserDto);
         return await this.userService.create(createUserDto);
     }
 

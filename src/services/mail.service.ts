@@ -41,7 +41,7 @@ export class MailService {
           Authorization: `Basic ${authInfo}`,
         },
       };
-
+      return resolve('success');
       transporter.sendMail(message, (error, info) => {
         if (error) {
           console.log('^-^', message.headers);
