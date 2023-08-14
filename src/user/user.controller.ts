@@ -65,17 +65,38 @@ export class UserController {
      * @returns { name, email, accessToken, refreshToken } - This method will return an object with the user data
      *
      */
-    @Post('verify-email')
+    // @Get('verify-email')
+    // @HttpCode(HttpStatus.OK)
+    // @ApiOperation({summary: 'Verify Email',})
+    // @ApiOkResponse({})
+    // // @UseGuards(AuthGuard('jwt'))
+    // // @Roles('admin')
+    // async verifyEmail(@Req() req: Request, @Body() verifyUuidDto: VerifyUuidDto) {
+    //     console.log('^-^verify-email: ', verifyUuidDto);
+    //     return await this.userService.verifyEmail(req, verifyUuidDto);
+    // }
+
+    // ╦  ╦╔═╗╦═╗╦╔═╗╦ ╦  ╔═╗╔╦╗╔═╗╦╦    ╔═╗╦ ╦╔═╗╔╦╗╔═╗╔╦╗╔═╗╦═╗
+    // ╚╗╔╝║╣ ╠╦╝║╠╣ ╚╦╝  ║╣ ║║║╠═╣║║    ║  ║ ║╚═╗ ║ ║ ║║║║║╣ ╠╦╝
+    //  ╚╝ ╚═╝╩╚═╩╚   ╩   ╚═╝╩ ╩╩ ╩╩╩═╝  ╚═╝╚═╝╚═╝ ╩ ╚═╝╩ ╩╚═╝╩╚═
+    /**
+     * This method will facilitate the verification process of a new user email address
+     * 
+     * @example - Request URL - GET - http://localhost:3000/customer/validation/PUTCODEHERE
+     *
+     * @param {string} - The verification code used to verify this email address.
+     *
+     */
+    @Get('validation/:code')
     @HttpCode(HttpStatus.OK)
-    @ApiOperation({summary: 'Verify Email',})
+    @ApiOperation({summary: 'Verify User Email'})
     @ApiOkResponse({})
-    @UseGuards(AuthGuard('jwt'))
-    @Roles('admin')
-    async verifyEmail(@Req() req: Request, @Body() verifyUuidDto: VerifyUuidDto) {
-        return await this.userService.verifyEmail(req, verifyUuidDto);
+    @ApiParam({name: 'code', description: 'code of User'})
+    async verifyEmail(@Param() params) {
+        console.log('^-^verify-email: ', params.code);
+        return await this.userService.verifyCustomerEmail(params.code);
     }
 
-    
 
     // ╔═╗╦ ╦╔╦╗╦ ╦╔═╗╔╗╔╔╦╗╦╔═╗╔═╗╔╦╗╔═╗
     // ╠═╣║ ║ ║ ╠═╣║╣ ║║║ ║ ║║  ╠═╣ ║ ║╣
@@ -94,6 +115,7 @@ export class UserController {
     @ApiOperation({summary: 'Login User',})
     @ApiOkResponse({})
     async login(@Req() req: Request, @Body() loginUserDto: LoginUserDto) {
+        console.log('^-^', loginUserDto);
         return await this.userService.login(req, loginUserDto);
     }
 

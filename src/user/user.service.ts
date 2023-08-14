@@ -49,17 +49,19 @@ export class UserService {
             await this.isDisplayNameUnique(user.displayname);
             this.setRegistrationInfo(user);
             user.roles = ["customer"];
+            user.verified = false;
             var veirification = user.verification;
+            user.loginAttempts = 0;
             await user.save();
             let data = {
                 user: user,
                 link: veirification
             }
-            console.log('^-^', data);
+            // console.log('^-^', data);
             const status = await this.mailService.verifyAccount(data).then((result) => {
                 return result;
             });
-            return this.buildRegistrationInfo(user, status);
+            return this.buildRegistrationInfo(data, status);
         } catch (error) {
             console.error(error);
         }
@@ -89,22 +91,24 @@ export class UserService {
         }
         this.isUserBlocked(user);
         await this.checkPassword(loginUserDto.password, user);
+        // console.log('^-^User : ', user);
         await this.passwordsAreMatch(user);
-        this.isRoleBlocked(user);
-
+        // this.isRoleBlocked(user);
         var date = new Date(),
             date2 = new Date(date);
         date2.setMinutes(date.getMinutes() + parseInt(process.env.JWT_EXPIRATION_MINUTES));
         var expiration_time = date2;
-
-        return {
+        var resData = {
             displayname: user.displayname,
             email: user.email,
             roles: user.roles,
             exp: expiration_time,
             accessToken: await this.authService.createAccessToken(user._id),
             refreshToken: await this.authService.createRefreshToken(req, user._id),
-        };
+        }
+        console.log('^-^', resData);
+
+        return resData;
     }
 
     // ┬─┐┌─┐┌─┐┬─┐┌─┐┌─┐┬ ┬  ┌─┐┌─┐┌─┐┌─┐┌─┐┌─┐  ┌┬┐┌─┐┬┌─┌─┐┌┐┌
@@ -247,14 +251,16 @@ export class UserService {
     private setRegistrationInfo(user): any {
         user.verification = v4();
         user.verificationExpires = addHours(new Date(), this.HOURS_TO_VERIFY);
+        // console.log('^-^ userRegistrationInfo: ', user);
     }
 
-    private buildRegistrationInfo(user, email_status): any {
+    private buildRegistrationInfo(data, email_status): any {
         const userRegistrationInfo = {
-            name: user.displayname,
-            email: user.email,
-            verified: user.verified,
+            name: data.user.displayname,
+            email: data.user.email,
+            verified: data.user.verified,
             email_status: email_status,
+            link: data.link,
             result: "success"
         };
         return userRegistrationInfo;
@@ -297,9 +303,25 @@ export class UserService {
         }
         return user;
     }
+    
+    // ┬  ┬┌─┐┬─┐┬┌─┐┬ ┬  ┌─┐┬ ┬┌─┐┌┬┐┌─┐┌┬┐┌─┐┬─┐  ┌─┐┌┬┐┌─┐┬┬  
+    // └┐┌┘├┤ ├┬┘│├┤ └┬┘  │  │ │└─┐ │ │ ││││├┤ ├┬┘  ├┤ │││├─┤││  
+    //  └┘ └─┘┴└─┴└   ┴   └─┘└─┘└─┘ ┴ └─┘┴ ┴└─┘┴└─  └─┘┴ ┴┴ ┴┴┴─┘
+    async verifyCustomerEmail(code: string) {
 
+        const user = await this.findByVerification(code);
+        await this.setUserAsVerified(user);
+        return {
+            name: user.displayname,
+            email: user.email,
+            verify: true
+        };
+    }
+
+    
     private async checkPassword(attemptPass: string, user) {
         const match = await bcrypt.compare(attemptPass, user.password);
+        console.log('^-^Compare Pass: ', attemptPass, user.password, match);
         if (!match) {
             await this.passwordsDoNotMatch(user);
             throw new NotFoundException('Wrong email or password.');

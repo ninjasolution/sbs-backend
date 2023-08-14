@@ -6,6 +6,8 @@ import {
   import {
     Document
   } from 'mongoose';
+  import { UUID } from "crypto";
+  import * as bcrypt from 'bcrypt';
   
   export type UsersDocument = User & Document;
   
@@ -31,7 +33,36 @@ import {
   
     @Prop()
     roles: [string];
+  
+    @Prop()
+    verification: UUID;
+  
+    @Prop()
+    verified: boolean;
+  
+    @Prop()
+    verificationExpires: Date
+
+    @Prop()
+    blockExpires: Date;
+
+    @Prop()
+    loginAttempts: Number;
 
   }
   
   export const UserSchema = SchemaFactory.createForClass(User);
+
+  
+UserSchema.pre('save', async function(next) {
+  try {
+    if (!this.isModified('password')) {
+      return next();
+    }
+    const hashed = await bcrypt.hash(this['password'], 10);
+    this['password'] = hashed;
+    return next();
+  } catch (err) {
+    return next(err);
+  }
+});

@@ -49,7 +49,7 @@ export class VerifyAccountTemplate {
              </tr>
              <tr>
                  <th style="padding-top: 35px;">
-                     <span style="padding-top: 15px; text-align: center; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI'; font-size: 15px; color: #186d35; font-weight: lighter;">Button not working? Paste this link into your browser instead: <br/>${this.consumer_uri}/customer/validation/${data.link}</span>
+                     <span style="padding-top: 15px; text-align: center; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI'; font-size: 15px; color: #186d35; font-weight: lighter;">Button not working? Paste this link into your browser instead: <br/>${this.consumer_uri}/user/validation/${data.link}</span>
                  </th>
              </tr>
              <tr>
