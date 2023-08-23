@@ -91,17 +91,20 @@ export class UserService {
         }
         this.isUserBlocked(user);
         await this.checkPassword(loginUserDto.password, user);
-        // console.log('^-^User : ', user);
         await this.passwordsAreMatch(user);
         // this.isRoleBlocked(user);
         var date = new Date(),
             date2 = new Date(date);
+        console.log('^-^CreatedTime : ', date);
         date2.setMinutes(date.getMinutes() + parseInt(process.env.JWT_EXPIRATION_MINUTES));
         var expiration_time = date2;
         var resData = {
             displayname: user.displayname,
             email: user.email,
             roles: user.roles,
+            firstname: user.firstname,
+            surname: user.surname,
+            id: user._id,
             exp: expiration_time,
             accessToken: await this.authService.createAccessToken(user._id),
             refreshToken: await this.authService.createRefreshToken(req, user._id),

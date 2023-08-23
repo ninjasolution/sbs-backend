@@ -1,12 +1,13 @@
 export class Contactdetail {
-    Title: string;
-    SurName: string;
-    Phone: string;
-    Email: string;
-    PostAddress: string;
-    Suburb: string;
-    State: string;
-    PostCode: string;
+    title: string;
+    givenname: string;
+    surname: string;
+    phone: string;
+    email: string;
+    postaddress: string;
+    suburb: string;
+    state: string;
+    postcode: string;
     UserId: string;
 };
 

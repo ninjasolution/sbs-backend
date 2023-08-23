@@ -20,6 +20,9 @@ import {
     surname: string;
   
     @Prop()
+    displayname: string;
+  
+    @Prop()
     email: string;
   
     @Prop()

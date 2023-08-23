@@ -3,6 +3,7 @@ import { UUID } from "crypto";
 export class User {
     firstname: string;
     surname: string;
+    displayname: string;
     gender: string;
     email: string;
     password: string;

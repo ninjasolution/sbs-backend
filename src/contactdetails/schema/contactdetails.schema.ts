@@ -12,21 +12,23 @@ export type ContactdetailDocument = Contactdetail & Document;
 @Schema()
 export class Contactdetail {
     @Prop()
-    Title: string;
+    title: string;
     @Prop()
-    SurName: string;
+    givenname: string;
     @Prop()
-    Phone: string;
+    surname: string;
     @Prop()
-    Email: string;
+    phone: string;
     @Prop()
-    PostAddress: string;
+    email: string;
     @Prop()
-    Suburb: string;
+    postaddress: string;
     @Prop()
-    State: string;
+    suburb: string;
     @Prop()
-    PostCode: string;
+    state: string;
+    @Prop()
+    postcode: string;
     @Prop()
     UserId: string;
 }
