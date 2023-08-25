@@ -1,4 +1,5 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
+import { IsUUID } from 'class-validator';
 import { Document } from 'mongoose';
 
 export type InvestorCDocument = InvestorC & Document;
@@ -6,43 +7,44 @@ export type InvestorCDocument = InvestorC & Document;
 @Schema()
 export class InvestorC {
     @Prop()
-    CompanyfullName: string;
+    cacn: string;
     @Prop()
-    license: string;
+    cbusinessactivity: string;
     @Prop()
-    ACN: string;
+    cbusinessaddress: string;
     @Prop()
-    AddressReg: string;
+    cbusinessdetail: string;
     @Prop()
-    Suburb: string;
+    cbusinesspostCode: string;
     @Prop()
-    State: string;
+    cbusinessstate: string;
     @Prop()
-    PostCode: string;
+    cbusinesssuburb: string;
     @Prop()
-    AddressPpb: string;
+    cdirector1: string;
     @Prop()
-    SuburbPpb: string;
+    cdirector2: string;
     @Prop()
-    StatePpb: string;
+    cdirector3: string;
     @Prop()
-    PostCodePpb: string;
+    cdirector4: string;
     @Prop()
-    activity: string;
+    clicenceno: string;
     @Prop()
-    listing: string;
+    cname: string;
     @Prop()
-    Proprietary: boolean;
+    cofficeaddr: string;
     @Prop()
-    Director1Name: string;
+    cofficepostCode: string;
     @Prop()
-    Director2Name: string;
+    cofficestate: string;
     @Prop()
-    Director3Name: string;
+    cofficesuburb: string;
     @Prop()
-    Director4Name: string;
-    @Prop()
-    UserId: string;
+    compaytype: string;
+    @Prop({ required: true, unique: true })
+    @IsUUID()
+    userId: string;
 };
 
 export const InvestorCSchema = SchemaFactory.createForClass(InvestorC);

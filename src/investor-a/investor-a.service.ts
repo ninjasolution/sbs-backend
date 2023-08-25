@@ -20,11 +20,11 @@ export class InvestorAService {
     return this.InvestorAModel.find().exec();
   }
 
-  async findOne(id: number) {
-    return this.InvestorAModel.findById(id);
+  async findOne(id: string) {
+    return this.InvestorAModel.findOne({userId: id});
   }
 
-  async update(id: number, updateInvestorADto: UpdateInvestorADto) {
+  async update(id: string, updateInvestorADto: UpdateInvestorADto) {
     return this.InvestorAModel.findByIdAndUpdate(id, updateInvestorADto);
   }
 

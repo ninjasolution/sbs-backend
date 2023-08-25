@@ -11,6 +11,7 @@ export class ContactdetailsService {
   constructor(@InjectModel(Contactdetail.name) private readonly ContactDetailModel: Model <ContactdetailDocument>) {}
 
   async create(createContactdetailDto: CreateContactdetailDto) {
+    console.log('^-^contact creating... ', createContactdetailDto);
     const contactdetail = new this.ContactDetailModel(createContactdetailDto);
     return contactdetail.save();
   }
@@ -19,11 +20,13 @@ export class ContactdetailsService {
     return this.ContactDetailModel.find().exec();
   }
 
-  async findOne(id: number) {
-    return this.ContactDetailModel.findById(id);
+  async findOne(id: string) {
+    console.log('^-^contact for ' + id);
+    return this.ContactDetailModel.findOne({userId: id});
   }
 
-  async update(id: number, updateContactdetailDto: UpdateContactdetailDto) {
+  async update(id: string, updateContactdetailDto: UpdateContactdetailDto) {
+    console.log('^-^Update contact ', id);
     return this.ContactDetailModel.findByIdAndUpdate(id, updateContactdetailDto);
   }
 

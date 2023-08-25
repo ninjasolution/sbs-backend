@@ -1,4 +1,5 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
+import { IsUUID } from 'class-validator';
 import { Document } from 'mongoose';
 
 export type InvestorEDocument = InvestorE & Document;
@@ -6,49 +7,48 @@ export type InvestorEDocument = InvestorE & Document;
 @Schema()
 export class InvestorE {
     @Prop()
-    OwnerName: string;
+    eowner1isexposedperson: string;
     @Prop()
-    Ownerbirth: Date;
+    eowner1postCode: string;
     @Prop()
-    OwnerAddress: string;
+    eowner1state: string;
     @Prop()
-    OwnerSuburb: string;
+    eowner1suburb: string;
     @Prop()
-    OwnerState: string;
+    eowner2isexposedperson: string;
     @Prop()
-    OwnerPostCode: string;
+    eowner2state: string;
     @Prop()
-    isOwnerPolitical: boolean;
+    eowner2suburb: string;
     @Prop()
-    Owner2Name: string;
+    eowner3isexposedperson: string;
     @Prop()
-    Owner2birth: Date;
+    eowner3postCode: string;
     @Prop()
-    Owner2Address: string;
+    eowner3state: string;
     @Prop()
-    Owner2Suburb: string;
+    eowner3suburb: string;
     @Prop()
-    Owner2State: string;
+    eownerdate1: string;
     @Prop()
-    Owner2PostCode: string;
+    eownerdate2: string;
     @Prop()
-    isOwner2Political: boolean;
+    eownerdate3: string;
     @Prop()
-    Owner3Name: string;
+    eownername1: string;
     @Prop()
-    Owner3birth: Date;
+    eownername2: string;
     @Prop()
-    Owner3Address: string;
+    eownername3: string;
     @Prop()
-    Owner3Suburb: string;
+    eownerresidental1: string;
     @Prop()
-    Owner3State: string;
+    eownerresidental2: string;
     @Prop()
-    Owner3PostCode: string;
-    @Prop()
-    isOwner3Political: boolean;
-    @Prop()
-    UserId: string;
+    eownerresidental3: string;
+    @Prop({ required: true, unique: true })
+    @IsUUID()
+    userId: string;
 };
 
 export const InvestorESchema = SchemaFactory.createForClass(InvestorE);

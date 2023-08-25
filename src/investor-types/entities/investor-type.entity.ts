@@ -1,7 +1,13 @@
+interface Steps {
+    name: string;
+    value: string;
+}
+
 export class InvestorType {
-    Title: string;
-    Content: string;
-    tableNames: Array<string>;
-    tableIds: Array<string>;
-    UserId: string;
+    id: string;
+    description: string;
+    label: string;
+    value: Array<string>;
+    collectionIds: any;
+    userId: string;
 }

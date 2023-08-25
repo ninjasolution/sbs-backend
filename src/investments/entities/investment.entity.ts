@@ -1,5 +1,7 @@
 export class Investment {
-    amount: string;
-    fundSelected: string;
-    UserId: string;
+    amount: number;
+    fund: string;
+    distribution: string;
+    percent: number;
+    userId: string;
 }

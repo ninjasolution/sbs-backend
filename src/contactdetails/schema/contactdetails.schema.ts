@@ -6,6 +6,7 @@ import {
 import {
     Document
 } from 'mongoose';
+import { IsUUID, isUUID } from 'class-validator';
 
 export type ContactdetailDocument = Contactdetail & Document;
 
@@ -22,15 +23,16 @@ export class Contactdetail {
     @Prop()
     email: string;
     @Prop()
-    postaddress: string;
+    address: string;
     @Prop()
     suburb: string;
     @Prop()
     state: string;
     @Prop()
     postcode: string;
-    @Prop()
-    UserId: string;
+    @Prop({ required: true, unique: true })
+    @IsUUID()
+    userId: string;
 }
 
 export const ContactdetailSchema = SchemaFactory.createForClass(Contactdetail);

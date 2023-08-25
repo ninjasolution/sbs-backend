@@ -3,6 +3,7 @@ import {
     Schema,
     SchemaFactory
 } from '@nestjs/mongoose';
+import { IsUUID } from 'class-validator';
 import {
     Document
 } from 'mongoose';
@@ -12,11 +13,16 @@ export type InvestmentDocument = Investment & Document;
 @Schema()
 export class Investment {
     @Prop()
-    amount: string;
+    amount: number;
     @Prop()
-    fundSelected: string;
+    fund: string;
     @Prop()
-    UserId: string;
+    distribution: string;
+    @Prop()
+    percent: number;
+    @Prop({required: true, unique: true})
+    @IsUUID()
+    userId: string;
 }
 
 export const InvestmentSchema = SchemaFactory.createForClass(Investment);

@@ -4,10 +4,10 @@ export class Contactdetail {
     surname: string;
     phone: string;
     email: string;
-    postaddress: string;
+    address: string;
     suburb: string;
     state: string;
     postcode: string;
-    UserId: string;
+    userId: string;
 };
 

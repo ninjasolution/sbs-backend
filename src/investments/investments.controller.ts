@@ -2,12 +2,18 @@ import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/commo
 import { InvestmentsService } from './investments.service';
 import { CreateInvestmentDto } from './dto/create-investment.dto';
 import { UpdateInvestmentDto } from './dto/update-investment.dto';
+import { ApiBearerAuth, ApiHeader } from '@nestjs/swagger';
 
 @Controller('investments')
 export class InvestmentsController {
   constructor(private readonly investmentsService: InvestmentsService) {}
 
   @Post()
+  @ApiBearerAuth()
+  @ApiHeader({
+    name: 'Bearer',
+    description: 'the token we need for auth.'
+  })
   create(@Body() createInvestmentDto: CreateInvestmentDto) {
     return this.investmentsService.create(createInvestmentDto);
   }
@@ -19,12 +25,17 @@ export class InvestmentsController {
 
   @Get(':id')
   findOne(@Param('id') id: string) {
-    return this.investmentsService.findOne(+id);
+    return this.investmentsService.findOne(id);
   }
 
   @Patch(':id')
+  @ApiBearerAuth()
+  @ApiHeader({
+    name: 'Bearer',
+    description: 'the token we need for auth.'
+  })
   update(@Param('id') id: string, @Body() updateInvestmentDto: UpdateInvestmentDto) {
-    return this.investmentsService.update(+id, updateInvestmentDto);
+    return this.investmentsService.update(id, updateInvestmentDto);
   }
 
   @Delete(':id')
