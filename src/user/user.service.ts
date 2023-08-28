@@ -109,7 +109,7 @@ export class UserService {
             accessToken: await this.authService.createAccessToken(user._id),
             refreshToken: await this.authService.createRefreshToken(req, user._id),
         }
-        console.log('^-^', resData);
+        // console.log('^-^', resData);
 
         return resData;
     }

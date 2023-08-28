@@ -1,10 +1,11 @@
 export class Bankinfo {
-    bankName: string;
-    accountName: string;
-    BSB: string;
-    accountNumber: string;
-    distributionInst: string;
-    iban: string;
-    bankbranch: string;
-    UserId: string;
+    accountname: string;
+    accountnumber: string;
+    backbranch: string;
+    bsb: string;
+    direct: boolean;
+    institution: string;
+    instruction: string;
+    swiftiban: string;
+    userId: string;
 }

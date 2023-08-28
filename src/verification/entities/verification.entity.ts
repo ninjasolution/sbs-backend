@@ -1,9 +1,18 @@
 export class Verification {
-    signature1: BinaryType;
-    signature2: BinaryType;
-    owner1: BinaryType;
-    owner2: BinaryType;
-    owner3: BinaryType;
-    owner4: BinaryType;
-    UserId: string;
+    investor1: string;
+    investor1Sign: string;
+    investor2: string;
+    investor2Sign: string;
+    owner1: string;
+    owner1Sign: string;
+    owner2: string;
+    owner2Sign: string;
+    owner3: string;
+    owner3Sign: string;
+    owner4: string;
+    owner4Sign: string;
+    frontScreen: string;
+    backScreen: string;
+    selectedImage: string;
+    userId: string;
 }

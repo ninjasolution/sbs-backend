@@ -1,4 +1,5 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
+import { IsUUID } from 'class-validator';
 import { Document } from 'mongoose';
 
 export type BankinfoDocument = Bankinfo & Document;
@@ -6,21 +7,24 @@ export type BankinfoDocument = Bankinfo & Document;
 @Schema()
 export class Bankinfo {
     @Prop()
-    bankName: string;
+    accountname: string;
     @Prop()
-    accountName: string;
+    accountnumber: string;
     @Prop()
-    BSB: string;
+    backbranch: string;
     @Prop()
-    accountNumber: string;
+    bsb: string;
     @Prop()
-    distributionInst: string;
+    direct: boolean;
     @Prop()
-    iban: string;
+    institution: string;
     @Prop()
-    bankbranch: string;
+    instruction: string;
     @Prop()
-    UserId: string;
+    swiftiban: string;
+    @Prop({ required: true, unique: true})
+    @IsUUID()
+    userId: string;
 };
 
 export const BankinfoSchema = SchemaFactory.createForClass(Bankinfo);

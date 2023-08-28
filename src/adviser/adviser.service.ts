@@ -20,11 +20,11 @@ export class AdviserService {
     return this.AdviserModel.find().exec();
   }
 
-  async findOne(id: number) {
-    return this.AdviserModel.findById(id);
+  async findOne(id: string) {
+    return this.AdviserModel.findOne({userId: id});
   }
 
-  async update(id: number, updateAdviserDto: UpdateAdviserDto) {
+  async update(id: string, updateAdviserDto: UpdateAdviserDto) {
     return this.AdviserModel.findByIdAndUpdate(id, updateAdviserDto);
   }
 

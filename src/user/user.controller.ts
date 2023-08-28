@@ -115,7 +115,7 @@ export class UserController {
     @ApiOperation({summary: 'Login User',})
     @ApiOkResponse({})
     async login(@Req() req: Request, @Body() loginUserDto: LoginUserDto) {
-        console.log('^-^', loginUserDto);
+        // console.log('^-^', loginUserDto);
         return await this.userService.login(req, loginUserDto);
     }
 

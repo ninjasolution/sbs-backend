@@ -1,5 +1,5 @@
 export class Deposittype {
-    depositName: string;
+    payingby: string;
     bankinfoId: string;
-    UserId: string;
+    userId: string;
 };

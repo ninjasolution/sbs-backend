@@ -20,11 +20,11 @@ export class BankinfoService {
     return this.BankinfoModel.find().exec();
   }
 
-  async findOne(id: number) {
-    return this.BankinfoModel.findById(id);
+  async findOne(id: string) {
+    return this.BankinfoModel.findOne({userId: id});
   }
 
-  async update(id: number, updateBankinfoDto: UpdateBankinfoDto) {
+  async update(id: string, updateBankinfoDto: UpdateBankinfoDto) {
     return this.BankinfoModel.findByIdAndUpdate(id, updateBankinfoDto);
   }
 

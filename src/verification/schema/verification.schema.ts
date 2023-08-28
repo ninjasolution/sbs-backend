@@ -1,4 +1,5 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
+import { IsUUID } from 'class-validator';
 import { Document } from 'mongoose';
 
 export type VerificationDocument = Verification & Document;
@@ -6,19 +7,38 @@ export type VerificationDocument = Verification & Document;
 @Schema()
 export class Verification {
     @Prop()
-    signature1: BinaryType;
+    investor1: string;
     @Prop()
-    signature2: BinaryType;
+    investor1Sign: Buffer;
     @Prop()
-    owner1: BinaryType;
+    investor2: string;
     @Prop()
-    owner2: BinaryType;
+    investor2Sign: Buffer;
     @Prop()
-    owner3: BinaryType;
+    owner1: string;
     @Prop()
-    owner4: BinaryType;
+    owner1Sign: Buffer;
     @Prop()
-    UserId: string;
+    owner2: string;
+    @Prop()
+    owner2Sign: Buffer;
+    @Prop()
+    owner3: string;
+    @Prop()
+    owner3Sign: Buffer;
+    @Prop()
+    owner4: string;
+    @Prop()
+    owner4Sign: Buffer;
+    @Prop()
+    selectedImage: Buffer;
+    @Prop()
+    frontScreen: Buffer;
+    @Prop()
+    backScreen: Buffer;
+    @Prop({ required: true, unique: true})
+    @IsUUID()
+    userId: string;
 };
 
 export const VerificationSchema = SchemaFactory.createForClass(Verification);

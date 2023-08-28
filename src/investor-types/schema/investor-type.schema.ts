@@ -17,7 +17,6 @@ export class InvestorType {
     @Prop({ type: mongoose.Schema.Types.Mixed }) // Set the 'collectionIds' type to Mongoose Mixed
     collectionIds: Record<string, any>; // Update the type of 'collectionIds' to Record<string, any>
   // ... other properties ...
-
     @Prop({ required: true, unique: true})
     @IsUUID()
     userId: string;

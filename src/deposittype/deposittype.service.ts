@@ -20,11 +20,11 @@ export class DeposittypeService {
     return this.DeposittypeModel.find().exec();
   }
 
-  async findOne(id: number) {
-    return this.DeposittypeModel.findById(id);
+  async findOne(id: string) {
+    return this.DeposittypeModel.findOne({userId: id});
   }
 
-  async update(id: number, updateDeposittypeDto: UpdateDeposittypeDto) {
+  async update(id: string, updateDeposittypeDto: UpdateDeposittypeDto) {
     return this.DeposittypeModel.findByIdAndUpdate(id, updateDeposittypeDto);
   }
 
