@@ -20,11 +20,11 @@ export class WholesaleService {
     return this.WholesaleModel.find().exec();
   }
 
-  async findOne(id: number) {
-    return this.WholesaleModel.findById(id);
+  async findOne(id: string) {
+    return this.WholesaleModel.findOne({userId: id});
   }
 
-  async update(id: number, updateWholesaleDto: UpdateWholesaleDto) {
+  async update(id: string, updateWholesaleDto: UpdateWholesaleDto) {
     return this.WholesaleModel.findByIdAndUpdate(id, updateWholesaleDto);
   }
 

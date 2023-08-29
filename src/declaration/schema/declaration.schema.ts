@@ -1,4 +1,5 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
+import { IsUUID } from 'class-validator';
 import { Document } from 'mongoose';
 
 export type DeclarationDocument = Declaration & Document;
@@ -6,27 +7,34 @@ export type DeclarationDocument = Declaration & Document;
 @Schema()
 export class Declaration {
     @Prop()
-    isAllsign: boolean;
+    date : string;
     @Prop()
-    signature: BinaryType;
+    date2 : string;
     @Prop()
-    appName: string;
+    name : string;
     @Prop()
-    appDate: Date;
+    name2 : string;
     @Prop()
-    appTitle: string;
+    other : string;
     @Prop()
-    appDirector: boolean;
+    other2 : string;
     @Prop()
-    appCompanySecretary: boolean;
+    owner1Sign: Buffer;
     @Prop()
-    appTrustee: boolean;
+    owner2Sign: Buffer;
     @Prop()
-    appOther: boolean;
+    title : string;
     @Prop()
-    appSpec: string;
+    title2 : string;
     @Prop()
-    UserId: string;
+    type : Array<string>;
+    @Prop()
+    type2 : Array<string>;
+    @Prop()
+    whosign : string;
+    @Prop({ required: true, unique: true})
+    @IsUUID()
+    userId: string;
 };
 
 export const DeclarationSchema = SchemaFactory.createForClass(Declaration);

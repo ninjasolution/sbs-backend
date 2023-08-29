@@ -20,11 +20,11 @@ export class FatcaService {
     return this.FatcaModel.find().exec();
   }
 
-  async findOne(id: number) {
-    return this.FatcaModel.findById(id);
+  async findOne(id: string) {
+    return this.FatcaModel.findOne({userId: id});
   }
 
-  async update(id: number, updateFatcaDto: UpdateFatcaDto) {
+  async update(id: string, updateFatcaDto: UpdateFatcaDto) {
     return this.FatcaModel.findByIdAndUpdate(id, updateFatcaDto);
   }
 
