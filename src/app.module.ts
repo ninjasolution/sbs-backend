@@ -20,6 +20,7 @@ import { WholesaleModule } from './wholesale/wholesale.module';
 import { DeclarationModule } from './declaration/declaration.module';
 import { AuthModule } from './auth/auth.module';
 import { UserModule } from './user/user.module';
+import { WordGenModule } from './word-gen/word-gen.module';
 require('dotenv').config();
 console.log('^-^', process.env.MONGO_URI);
 @Module({
@@ -41,7 +42,8 @@ console.log('^-^', process.env.MONGO_URI);
     WholesaleModule,
     DeclarationModule,
     AuthModule,
-    UserModule
+    UserModule,
+    WordGenModule
   ],
   controllers: [AppController],
   providers: [AppService],

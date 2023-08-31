@@ -15,7 +15,7 @@ export class DeclarationController {
     description: 'the token we need for auth.'
   })
   create(@Body() createDeclarationDto: CreateDeclarationDto) {
-    console.log('^-^Creating declaration : ', createDeclarationDto);
+    // console.log('^-^Creating declaration : ', createDeclarationDto);
     return this.declarationService.create(createDeclarationDto);
   }
 
