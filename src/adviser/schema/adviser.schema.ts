@@ -1,6 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { IsEmail, IsUUID } from 'class-validator';
-import { Document } from 'mongoose';
+import { Document, Types } from 'mongoose';
 
 export type AdviserDocument = Adviser & Document;
 
@@ -14,7 +14,7 @@ export class Adviser {
     @Prop()
     advisername: string;
     @Prop()
-    adviserphone: number;
+    adviserphone: string;
     @Prop()
     afslname: string;
     @Prop()
@@ -25,9 +25,12 @@ export class Adviser {
     authornumber: string;
     @Prop()
     signaturestamp: string;
-    @Prop({ required: true, unique: true})
-    @IsUUID()
-    userId: string;
+    @Prop({
+        unique: true,
+        type: Types.ObjectId,
+        ref: 'User',
+    })
+    userId: Types.ObjectId;
 
 };
 

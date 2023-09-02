@@ -3,7 +3,7 @@ import { CreateFatcaDto } from './dto/create-fatca.dto';
 import { UpdateFatcaDto } from './dto/update-fatca.dto';
 
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import { Model, Types } from 'mongoose';
 import { Fatca, FatcaDocument } from './schema/fatca.schema';
 
 @Injectable()
@@ -13,6 +13,7 @@ export class FatcaService {
 
   async create(createFatcaDto: CreateFatcaDto) {
     const Fatca = new this.FatcaModel(createFatcaDto);
+    Fatca.userId = new Types.ObjectId(createFatcaDto.userId);
     return Fatca.save();
   }
 
@@ -21,10 +22,12 @@ export class FatcaService {
   }
 
   async findOne(id: string) {
-    return this.FatcaModel.findOne({userId: id});
+    const objectId = new Types.ObjectId(id);
+    return this.FatcaModel.findOne({userId: objectId}).populate('userId').exec();
   }
 
   async update(id: string, updateFatcaDto: UpdateFatcaDto) {
+    updateFatcaDto.userId = new Types.ObjectId(updateFatcaDto.userId);
     return this.FatcaModel.findByIdAndUpdate(id, updateFatcaDto);
   }
 

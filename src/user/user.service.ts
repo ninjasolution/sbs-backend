@@ -18,6 +18,7 @@ import { ForgotPassword } from './interfaces/forgot-password.interface';
 import { User } from './interfaces/user.interface';
 import { time } from 'console';
 import { ChangeUserPasswordDto } from './dto/change-user-password.dto';
+import { ChangeUserStepDto } from './dto/change-user-step.dto';
 import { ChangeUserImagedDto } from './dto/change-user-image.dto';
 
 @Injectable()
@@ -105,6 +106,7 @@ export class UserService {
             firstname: user.firstname,
             surname: user.surname,
             id: user._id,
+            step: user.step,
             exp: expiration_time,
             accessToken: await this.authService.createAccessToken(user._id),
             refreshToken: await this.authService.createRefreshToken(req, user._id),
@@ -192,6 +194,17 @@ export class UserService {
 
     }
 
+    //UPDATE RETAILER Step
+    async updateStep(req: Request, changeUserStepDto: ChangeUserStepDto) {
+
+        const user = await this.findUserByEmail(changeUserStepDto.email);
+        console.log('^-^Change Step :', changeUserStepDto);
+        this.isUserBlocked(user);
+        user.step = changeUserStepDto.step;
+
+        return await this.userModel.updateOne({ email: changeUserStepDto.email }, user);
+    }
+
     //UPDATE USER IMAGE
     async updateUserImage(req: Request, changeUserImageDto: ChangeUserImagedDto) {
 
@@ -208,7 +221,8 @@ export class UserService {
     //UPDATE USER
     async updateUser(req: Request, updateUserDto: UpdateUserDto) {
         const user = await this.userModel.findById(updateUserDto.userId);
-        if (updateUserDto.password != "") {
+        // console.log('^-^updateUserDto : ', updateUserDto);
+        if (updateUserDto.password != undefined) {
             const new_password_hashed = await bcrypt.hash(updateUserDto.password, 10);
             user.password = new_password_hashed;
         }
@@ -223,7 +237,8 @@ export class UserService {
 
         user.firstname = updateUserDto.firstname;
         user.surname = updateUserDto.surname;
-        user.roles = updateUserDto.roles;
+        user.phone = updateUserDto.phone;
+        console.log('^-^Updated User: ', user);
 
 
         await this.userModel.updateOne({ _id: updateUserDto.userId }, user);

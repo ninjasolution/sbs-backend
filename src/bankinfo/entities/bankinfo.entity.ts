@@ -1,3 +1,5 @@
+import { Types } from "mongoose";
+
 export class Bankinfo {
     accountname: string;
     accountnumber: string;
@@ -7,5 +9,5 @@ export class Bankinfo {
     institution: string;
     instruction: string;
     swiftiban: string;
-    userId: string;
+    userId: Types.ObjectId;
 }

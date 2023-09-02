@@ -3,7 +3,7 @@ import { CreateDeclarationDto } from './dto/create-declaration.dto';
 import { UpdateDeclarationDto } from './dto/update-declaration.dto';
 
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import { Model, Types } from 'mongoose';
 import { Declaration, DeclarationDocument } from './schema/declaration.schema';
 
 @Injectable()
@@ -25,6 +25,7 @@ export class DeclarationService {
     const owner2Sign = createDeclarationDto.owner2Sign ? this.cb64i(createDeclarationDto.owner2Sign) : null;
     if(owner1Sign) Declaration.owner1Sign = owner1Sign;
     if(owner2Sign) Declaration.owner2Sign = owner2Sign;
+    Declaration.userId = new Types.ObjectId(createDeclarationDto.userId);
     return Declaration.save();
   }
 
@@ -33,7 +34,8 @@ export class DeclarationService {
   }
 
   async findOne(id: string) {
-    return this.DeclarationModel.findOne({userId: id});
+    const objectId = new Types.ObjectId(id);
+    return this.DeclarationModel.findOne({userId: objectId}).populate('userId').exec();
   }
 
   async update(id: string, updateDeclarationDto: UpdateDeclarationDto) {
@@ -42,6 +44,7 @@ export class DeclarationService {
     const owner2Sign = updateDeclarationDto.owner2Sign ? this.cb64i(updateDeclarationDto.owner2Sign) : null;
     if(owner1Sign) Declaration.owner1Sign = owner1Sign;
     if(owner2Sign) Declaration.owner2Sign = owner2Sign;
+    Declaration.userId = new Types.ObjectId(updateDeclarationDto.userId);
     return this.DeclarationModel.findByIdAndUpdate(id, { $set: Declaration });
   }
 

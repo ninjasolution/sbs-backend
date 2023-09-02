@@ -7,6 +7,8 @@ export class User {
     gender: string;
     email: string;
     password: string;
+    phone: string;
+    step: number;
     roles: [string];
     verification: UUID;
     verified: boolean;

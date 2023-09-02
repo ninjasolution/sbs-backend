@@ -1,3 +1,4 @@
+import { Types } from "mongoose";
 export class InvestorA {
     title : string;
     givenname: string;
@@ -14,5 +15,5 @@ export class InvestorA {
     exemptioncode: string;
     licenceno: string;
     politically: string;
-    userId: string;
+    userId: Types.ObjectId;
 };

@@ -1,3 +1,4 @@
+import { Types } from "mongoose";
 export class InvestorE {
     eowner1isexposedperson: string;
     eowner1postCode: string;
@@ -19,5 +20,5 @@ export class InvestorE {
     eownerresidental1: string;
     eownerresidental2: string;
     eownerresidental3: string;
-    userId: string;
+    userId: Types.ObjectId;
 }

@@ -11,6 +11,7 @@ import { UserService } from './user.service';
 import { AuthGuard, PassportModule } from '@nestjs/passport';
 import { RefreshAccessTokenDto } from './dto/refresh-access-token.dto';
 import { ChangeUserPasswordDto } from './dto/change-user-password.dto';
+import { ChangeUserStepDto } from './dto/change-user-step.dto';
 import { ChangeUserImagedDto } from './dto/change-user-image.dto';
 
 import {
@@ -155,7 +156,7 @@ export class UserController {
     @Get(':id')
     @HttpCode(HttpStatus.OK)
     @UseGuards(AuthGuard('jwt'))
-    @Roles('admin')
+    // @Roles('admin')
     @ApiBearerAuth()
     @ApiHeader({
         name: 'Bearer',
@@ -181,21 +182,49 @@ export class UserController {
         } - This method will return an object with name, email and verified
      *
      */
-    @Post('update-password')
+        @Post('update-password')
+        @HttpCode(HttpStatus.OK)
+        @ApiOperation({summary: 'Password User Reset',})
+        @UseGuards(AuthGuard('jwt'))
+        @Roles('admin', 'retailer')
+        @ApiBearerAuth()
+        @ApiHeader({
+            name: 'Bearer',
+            description: 'the token we need for auth.'
+        })
+        @ApiOkResponse({})
+        async updatePassword(@Req() req: Request, @Body() changeUserPasswordDto: ChangeUserPasswordDto) {
+            return await this.userService.updatePassword(req, changeUserPasswordDto);
+        }
+
+    /**
+     *
+     * This method will update the password for retailer or admin  users
+     *
+     * @param {name, email, verified} - 
+     * 
+     * @returns {
+            name: user.name,
+            email: user.email,
+            verified: user.verified,
+        } - This method will return an object with name, email and verified
+     *
+     */
+    @Post('update-step')
     @HttpCode(HttpStatus.OK)
-    @ApiOperation({summary: 'Password User Reset',})
+    @ApiOperation({summary: 'Step User Reset',})
     @UseGuards(AuthGuard('jwt'))
-    @Roles('admin', 'retailer')
+    // @Roles('admin', 'retailer')
     @ApiBearerAuth()
     @ApiHeader({
         name: 'Bearer',
         description: 'the token we need for auth.'
     })
     @ApiOkResponse({})
-    async updatePassword(@Req() req: Request, @Body() changeUserPasswordDto: ChangeUserPasswordDto) {
-        return await this.userService.updatePassword(req, changeUserPasswordDto);
+    async updateStep(@Req() req: Request, @Body() changeUserStepDto: ChangeUserStepDto) {
+        return await this.userService.updateStep(req, changeUserStepDto);
     }
-
+    
     /**
      *
      * This method will update an user image
@@ -229,11 +258,11 @@ export class UserController {
      * @returns {boolean}- This method will return true or false depending if the user was updated  
      *
      */
-    @Post('update-user')
+    @Put('update-user')
     @HttpCode(HttpStatus.OK)
     @ApiOperation({summary: 'Update User data',})
     @UseGuards(AuthGuard('jwt'))
-    @Roles('admin')
+    // @Roles('admin')
     @ApiBearerAuth()
     @ApiHeader({
         name: 'Bearer',

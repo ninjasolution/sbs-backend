@@ -3,7 +3,7 @@ import { CreateVerificationDto } from './dto/create-verification.dto';
 import { UpdateVerificationDto } from './dto/update-verification.dto';
 
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import { Model, Types } from 'mongoose';
 import { Verification, VerificationDocument } from './schema/verification.schema';
 
 @Injectable()
@@ -47,6 +47,7 @@ export class VerificationService {
     verification.owner3 = createVerificationDto.owner3;
     verification.owner4 = createVerificationDto.owner4;
     verification.userId = createVerificationDto.userId;
+    verification.userId = new Types.ObjectId(createVerificationDto.userId);
     return verification.save();
   }
 
@@ -55,7 +56,8 @@ export class VerificationService {
   }
 
   async findOne(id: string) {
-    return this.VerificationModel.findOne({userId: id});
+    const objectId = new Types.ObjectId(id);
+    return this.VerificationModel.findOne({userId: objectId}).populate('userId').exec();
   }
 
   async update(id: string, updateVerificationDto: UpdateVerificationDto) {
@@ -87,7 +89,7 @@ export class VerificationService {
     if (frontScreen !== null) {
       verificationData['frontScreen'] = frontScreen;
     }
-  
+    verificationData.userId = new Types.ObjectId(updateVerificationDto.userId);
     return this.VerificationModel.findByIdAndUpdate(id, { $set: verificationData });
   }
 

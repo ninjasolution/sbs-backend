@@ -1,3 +1,4 @@
+import { Types } from "mongoose";
 export class Fatca {
     isUscitizen: string;
     email: string;
@@ -13,5 +14,5 @@ export class Fatca {
     suburb: string;
     surname: string;
     ustin: string;
-    userId: string;
+    userId: Types.ObjectId;
 }

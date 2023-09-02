@@ -3,7 +3,7 @@ import { CreateInvestmentDto } from './dto/create-investment.dto';
 import { UpdateInvestmentDto } from './dto/update-investment.dto';
 
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import { Model, Types } from 'mongoose';
 import { Investment, InvestmentDocument } from './schema/investments.schema';
 
 @Injectable()
@@ -13,6 +13,7 @@ export class InvestmentsService {
 
   async create(createInvestmentDto: CreateInvestmentDto) {
     const investment = new this.InvestmentModel(createInvestmentDto);
+    investment.userId = new Types.ObjectId(createInvestmentDto.userId);
     return investment.save();
   }
 
@@ -21,10 +22,12 @@ export class InvestmentsService {
   }
 
   async findOne(id: string) {
-    return this.InvestmentModel.findOne({userId: id});
+    const objectId = new Types.ObjectId(id);
+    return this.InvestmentModel.findOne({userId: objectId}).populate('userId').exec();
   }
 
   async update(id: string, updateInvestmentDto: UpdateInvestmentDto) {
+    updateInvestmentDto.userId = new Types.ObjectId(updateInvestmentDto.userId);
     return this.InvestmentModel.findByIdAndUpdate(id, updateInvestmentDto);
   }
 

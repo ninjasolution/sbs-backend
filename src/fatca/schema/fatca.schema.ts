@@ -1,6 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { IsUUID } from 'class-validator';
-import { Document } from 'mongoose';
+import { Document, Types } from 'mongoose';
 
 export type FatcaDocument = Fatca & Document;
 
@@ -34,9 +34,12 @@ export class Fatca {
     surname: string;
     @Prop()
     ustin: string;
-    @Prop({ required: true, unique: true})
-    @IsUUID()
-    userId: string;
+    @Prop({
+        unique: true,
+        type: Types.ObjectId,
+        ref: 'User',
+    })
+    userId: Types.ObjectId;
 };
 
 export const FatcaSchema = SchemaFactory.createForClass(Fatca);

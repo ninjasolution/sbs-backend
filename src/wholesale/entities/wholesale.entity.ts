@@ -1,4 +1,6 @@
+import { Types } from "mongoose";
+
 export class Wholesale {
-    status: boolean;
-    userId: Array<any>;
+    status: Array<any>;
+    userId: Types.ObjectId;
 }

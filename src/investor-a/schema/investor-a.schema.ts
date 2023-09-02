@@ -1,6 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { IsUUID } from 'class-validator';
-import { Document } from 'mongoose';
+import mongoose, { Document, Types } from 'mongoose';
 
 export type InvestorADocument = InvestorA & Document;
 
@@ -36,9 +36,12 @@ export class InvestorA {
     licenceno: string;
     @Prop()
     politically: string;
-    @Prop({ required: true, unique: true })
-    @IsUUID()
-    userId: string;
+    @Prop({
+        unique: true,
+        type: Types.ObjectId,
+        ref: 'User',
+    })
+    userId: Types.ObjectId;
 };
 
 export const InvestorASchema = SchemaFactory.createForClass(InvestorA);

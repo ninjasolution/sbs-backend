@@ -1,3 +1,4 @@
+import { Types } from "mongoose";
 export class Verification {
     investor1: string;
     investor1Sign: string;
@@ -14,5 +15,5 @@ export class Verification {
     frontScreen: string;
     backScreen: string;
     selectedImage: string;
-    userId: string;
+    userId: Types.ObjectId;
 }

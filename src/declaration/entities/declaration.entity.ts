@@ -1,3 +1,4 @@
+import { Types } from "mongoose";
 export class Declaration {
     date : string;
     date2 : string;
@@ -12,5 +13,5 @@ export class Declaration {
     type : Array<string>;
     type2 : Array<string>;
     whosign : string;
-    userId: string;
+    userId: Types.ObjectId;
 }

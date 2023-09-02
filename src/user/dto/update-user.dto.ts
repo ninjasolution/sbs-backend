@@ -88,5 +88,13 @@ export class UpdateUserDto {
     @IsString()
     @MaxLength(255)
     readonly gender: string;
+    @ApiProperty({
+      example: '2874596284369',
+      description: 'The phone ',
+      format: 'string',
+    })
+    @IsString()
+    @MaxLength(255)
+    readonly phone: string;
 
   }

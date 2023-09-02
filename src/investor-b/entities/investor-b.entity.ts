@@ -1,3 +1,4 @@
+import { Types } from "mongoose";
 export class InvestorB {
     baustralian : string;
     bcountry : string;
@@ -15,5 +16,5 @@ export class InvestorB {
     bsurname : string;
     bticka :  boolean;
     btitle : string;
-    userId: string;
+    userId: Types.ObjectId;
 };

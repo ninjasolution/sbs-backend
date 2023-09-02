@@ -8,6 +8,8 @@ export interface User extends Document {
     email: string;
     password: string;
     roles: [string];
+    phone: string;
+    step: number;
     verification: string;
     verified: boolean;
     verificationExpires: Date;

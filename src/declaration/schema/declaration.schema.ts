@@ -1,6 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { IsUUID } from 'class-validator';
-import { Document } from 'mongoose';
+import { Document, Types } from 'mongoose';
 
 export type DeclarationDocument = Declaration & Document;
 
@@ -32,9 +32,12 @@ export class Declaration {
     type2 : Array<string>;
     @Prop()
     whosign : string;
-    @Prop({ required: true, unique: true})
-    @IsUUID()
-    userId: string;
+    @Prop({
+        unique: true,
+        type: Types.ObjectId,
+        ref: 'User',
+    })
+    userId: Types.ObjectId;
 };
 
 export const DeclarationSchema = SchemaFactory.createForClass(Declaration);

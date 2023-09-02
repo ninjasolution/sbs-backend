@@ -3,7 +3,7 @@ import { CreateDeposittypeDto } from './dto/create-deposittype.dto';
 import { UpdateDeposittypeDto } from './dto/update-deposittype.dto';
 
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import { Model, Types } from 'mongoose';
 import { Deposittype, DeposittypeDocument } from './schema/deposittype.schema';
 
 @Injectable()
@@ -13,6 +13,8 @@ export class DeposittypeService {
 
   async create(createDeposittypeDto: CreateDeposittypeDto) {
     const Deposittype = new this.DeposittypeModel(createDeposittypeDto);
+    Deposittype.bankinfoId = new Types.ObjectId(createDeposittypeDto.bankinfoId);
+    Deposittype.userId = new Types.ObjectId(createDeposittypeDto.userId);
     return Deposittype.save();
   }
 
@@ -21,10 +23,13 @@ export class DeposittypeService {
   }
 
   async findOne(id: string) {
-    return this.DeposittypeModel.findOne({userId: id});
+    const objectId = new Types.ObjectId(id);
+    return this.DeposittypeModel.findOne({userId: objectId}).populate('userId').populate('bankinfoId').exec();
   }
 
   async update(id: string, updateDeposittypeDto: UpdateDeposittypeDto) {
+    updateDeposittypeDto.bankinfoId = new Types.ObjectId(updateDeposittypeDto.bankinfoId);
+    updateDeposittypeDto.userId = new Types.ObjectId(updateDeposittypeDto.userId);
     return this.DeposittypeModel.findByIdAndUpdate(id, updateDeposittypeDto);
   }
 

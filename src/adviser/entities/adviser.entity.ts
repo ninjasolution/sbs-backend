@@ -1,12 +1,14 @@
+import { Types } from "mongoose";
+
 export class Adviser {
     advisercompany: string;
     adviseremail: string;
     advisername: string;
-    adviserphone: number;
+    adviserphone: string;
     afslname: string;
     afslnumber: string;
     assistant: string;
     authornumber: string;
     signaturestamp: string;
-    userId: string;
+    userId: Types.ObjectId;
 }

@@ -32,6 +32,12 @@ import {
     role: string;
   
     @Prop()
+    phone: string;
+  
+    @Prop()
+    step: number;
+
+    @Prop()
     gender: string;
   
     @Prop()

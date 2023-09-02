@@ -1,3 +1,4 @@
+import { Types } from "mongoose";
 export class InvestorC {
     cacn: string;
     cbusinessactivity: string;
@@ -17,5 +18,5 @@ export class InvestorC {
     cofficestate: string;
     cofficesuburb: string;
     compaytype: string;
-    userId: string;
+    userId: Types.ObjectId;
 }

@@ -1,3 +1,5 @@
+import { Types } from "mongoose";
+
 export class Contactdetail {
     title: string;
     givenname: string;
@@ -8,6 +10,6 @@ export class Contactdetail {
     suburb: string;
     state: string;
     postcode: string;
-    userId: string;
+    userId: Types.ObjectId;
 };
 

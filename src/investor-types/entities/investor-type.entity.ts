@@ -1,7 +1,4 @@
-interface Steps {
-    name: string;
-    value: string;
-}
+import { Types } from "mongoose";
 
 export class InvestorType {
     id: string;
@@ -9,5 +6,5 @@ export class InvestorType {
     label: string;
     value: Array<string>;
     collectionIds: any;
-    userId: string;
+    userId: Types.ObjectId;
 }

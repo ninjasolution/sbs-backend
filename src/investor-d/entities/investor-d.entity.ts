@@ -1,3 +1,4 @@
+import { Types } from "mongoose";
 export class InvestorD {
     daddtionalbeneficiaries: string;
     dadditionaltrustee: string;
@@ -16,5 +17,5 @@ export class InvestorD {
     dtrustname: string;
     dtypepftrust: string;
     terms: string;
-    userId: string;
+    userId: Types.ObjectId;
 }
