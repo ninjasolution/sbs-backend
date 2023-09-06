@@ -26,7 +26,8 @@ const { Blob } = require('blob-util');
 
 
 function flattenObject(obj, prefix = '', flattened = {}) {
-  console.log('^-^Object Count : ', Object.keys(obj._doc).length);
+  // if(prefix == 'fatcas') console.log('^-^FATCAs Data: ', obj);
+  console.log('^-^', prefix, ' Count : ', Object.keys(obj._doc).length);
   for (let [key, value] of Object.entries(obj._doc)) {
     const newPrefix = prefix ? `${prefix}.${key}` : key;
     if(prefix === "verification") {
@@ -34,7 +35,7 @@ function flattenObject(obj, prefix = '', flattened = {}) {
       if(key == 'investor1Sign' || key == 'investor2Sign' 
         || key == 'owner1Sign' || key == 'owner2Sign'
         || key == 'owner3Sign' || key == 'owner4Sign') {
-          const buffer: any = value;
+          const buffer: any = value[0];
           const imageData = buffer.toString('base64');
           // flattened[newPrefix] = {
           //   data: imageData,
@@ -46,7 +47,7 @@ function flattenObject(obj, prefix = '', flattened = {}) {
         flattened[newPrefix] = value;
     } 
     else {
-      // console.log('^-^ : ', key, ': ');
+      console.log('^-^ : ', prefix, '.', key, ': ');
       flattened[newPrefix] = value;
     }
   }
@@ -90,7 +91,7 @@ export class WordGenService {
     return updatedContent;
   }
 
-  async writeOutputFile(outputPath: string, updatedContent: Buffer): Promise<void> {
+  async writeOutputFile(outputPath: string, updatedContent: Buffer): Promise<string> {
     console.log('Output file ' + outputPath + ' has been written successfully.');
     var formdata = new FormData();
     formdata.append('outputpath', outputPath);
@@ -109,9 +110,10 @@ export class WordGenService {
       },
     });
   
-    const ipfsURL = "https://gateway.pinata.cloud/ipfs/"+ resFile.data.IpfsHash;
-    console.log('^-^ipfsURL : ', ipfsURL);
-    return await fs.promises.writeFile(ipfsURL, updatedContent);
+    // const ipfsURL = "https://gateway.pinata.cloud/ipfs/"+ resFile.data.IpfsHash;
+    // console.log('^-^ipfsURL : ', ipfsURL);
+    await fs.promises.writeFile(outputPath, updatedContent);
+    return await resFile.data.IpfsHash;
 
   }
 
@@ -131,14 +133,14 @@ export class WordGenService {
 
     let genDocName = createwordgenDto.userId.toString() + '_' + investortypes.label + '.docx',
         tempDocName = 'template_' + investortypes.label + '.docx';
-
+        tempDocName = 'template.docx'; // this is just one for test.
         let flatobj0 = flattenObject(contactdetails, 'contactdetails'),
         flatobj1 = flattenObject(investments, 'investments'),
         flatobj2 = flattenObject(investortypes, 'investortypes'),
         flatobj3 = flattenObject(bankinfos, 'bankinfos'),
         flatobj4 = flattenObject(deposittypes, 'deposittypes'),
         flatobj5 = flattenObject(advisers, 'advisers'),
-        flatobj6 = flattenObject(verifications, 'verifications'),
+        // flatobj6 = flattenObject(verifications, 'verifications'),
         flatobj7 = flattenObject(fatcas, 'fatcas'),
         flatobj8 = flattenObject(wholesales, 'wholesales'),
         flatobj9 = flattenObject(declarations, 'declarations');
@@ -147,7 +149,7 @@ export class WordGenService {
           ...flatobj2, ...flatobj3, 
           ...flatobj4, ...flatobj5, 
           // ...flatobj6, 
-          // ...flatobj7, 
+          ...flatobj7, 
           // ...flatobj8, ...flatobj9 
         };
 
@@ -155,10 +157,11 @@ export class WordGenService {
 
     // Get the contents of the given docx file.
     let updatedcontent = await this.editWordDocument(tempDocName, docxData);
-    await this.writeOutputFile(genDocName, updatedcontent);
+    createwordgenDto.orientation = await this.writeOutputFile(genDocName, updatedcontent);
 
     wordgen.userId = new Types.ObjectId(createwordgenDto.userId);
-    return wordgen.save();
+    wordgen.save();
+    return createwordgenDto.orientation;
   }
 
   async findAll(): Promise<WordGen[]> {
@@ -219,7 +222,7 @@ export class WordGenService {
         flatobj3 = flattenObject(bankinfos, 'bankinfos'),
         flatobj4 = flattenObject(deposittypes, 'deposittypes'),
         flatobj5 = flattenObject(advisers, 'advisers'),
-        flatobj6 = flattenObject(verifications, 'verifications'),
+        // flatobj6 = flattenObject(verifications, 'verifications'),
         flatobj7 = flattenObject(fatcas, 'fatcas'),
         flatobj8 = flattenObject(wholesales, 'wholesales'),
         flatobj9 = flattenObject(declarations, 'declarations');
@@ -228,7 +231,7 @@ export class WordGenService {
                     ...flatobj2, ...flatobj3, 
                     ...flatobj4, ...flatobj5, 
                     // ...flatobj6, 
-                    // ...flatobj7, 
+                    ...flatobj7, 
                     // ...flatobj8, ...flatobj9 
                   };
 
@@ -237,9 +240,11 @@ export class WordGenService {
     let updatedcontent = await this.editWordDocument(tempDocName, docxData);
 
     updatewordgenDto.userId = new Types.ObjectId(updatewordgenDto.userId);
-    this.wordgenModel.findByIdAndUpdate(id, { $set: updatewordgenDto }).lean().exec();
 
-    return await this.writeOutputFile(genDocName, updatedcontent);
+    updatewordgenDto.orientation = await this.writeOutputFile(genDocName, updatedcontent);
+
+    this.wordgenModel.findByIdAndUpdate(id, { $set: updatewordgenDto }).lean().exec();
+    return updatewordgenDto.orientation;
   }
 
   async remove(id: string) {

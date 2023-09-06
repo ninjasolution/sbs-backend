@@ -38,12 +38,12 @@ export class WordGenController {
     name: 'Bearer',
     description: 'the token we need for auth.'
   })
-  update(@Param('id') id: string, @Body() updateWordGenDto: UpdateWordGenDto, @Res() res: Response) {
-    const fileData = this.wordGenService.update(id, updateWordGenDto);
+  async update(@Param('id') id: string, @Body() updateWordGenDto: UpdateWordGenDto, @Res() res: Response) {
+    const fileData = await this.wordGenService.update(id, updateWordGenDto);
     res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document');
     res.setHeader('Content-Disposition', 'attachment; filename="file.docx"');
     console.log('^-^File Data: ', fileData);
-    res.send(fileData);
+    res.send("https://gateway.pinata.cloud/ipfs/"+fileData);
   }
 
   @Delete(':id')
