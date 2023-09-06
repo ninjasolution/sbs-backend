@@ -29,6 +29,11 @@ export class ContactdetailsService {
     return await this.ContactDetailModel.findOne({userId: objectId}).populate('userId').exec();
   }
 
+  async findOnes(id: string) {
+    const objectId = new Types.ObjectId(id);
+    return await this.ContactDetailModel.findOne({userId: objectId}).exec();
+  }
+
   async update(id: string, updateContactdetailDto: UpdateContactdetailDto) {
     console.log('^-^Update contact ', id);
     updateContactdetailDto.userId = new Types.ObjectId(updateContactdetailDto.userId);

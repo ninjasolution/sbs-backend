@@ -6,6 +6,7 @@ import { ApiBearerAuth, ApiHeader } from '@nestjs/swagger';
 import { FileInterceptor } from '@nestjs/platform-express';
 const fs = require('fs');
 const { Docxtemplater } = require('docxtemplater');
+import { Response } from 'express';
 
 @Controller('word-gen')
 export class WordGenController {
@@ -17,20 +18,8 @@ export class WordGenController {
     name: 'Bearer',
     description: 'the token we need for auth.'
   })
-  @UseInterceptors(FileInterceptor('file'))
-  async create(@Body() formData, @Res() response, @UploadedFile() file) {
-    // return this.wordGenService.create(createWordGenDto);
-    // const { styledHTML } = body;
-    console.log('^-^Controller file: ', file);
-    try {
-      let retVal = await this.wordGenService.create(formData);
-      console.log('^-^WordGen return value: ', retVal);
-      // Send the generated DOCX file as a response
-      response.download('output.docx');
-    } catch (error) {
-      response.status(500).json({ message: 'Error generating DOCX', error });
-    }
-
+  async create(@Body() createWordGenDto) {
+    return this.wordGenService.create(createWordGenDto);
   }
 
   @Get()
@@ -40,7 +29,7 @@ export class WordGenController {
 
   @Get(':id')
   findOne(@Param('id') id: string) {
-    return this.wordGenService.findOne(+id);
+    return this.wordGenService.findOne(id);
   }
 
   @Patch(':id')
@@ -49,12 +38,16 @@ export class WordGenController {
     name: 'Bearer',
     description: 'the token we need for auth.'
   })
-  update(@Param('id') id: string, @Body() updateWordGenDto: UpdateWordGenDto) {
-    return this.wordGenService.update(+id, updateWordGenDto);
+  update(@Param('id') id: string, @Body() updateWordGenDto: UpdateWordGenDto, @Res() res: Response) {
+    const fileData = this.wordGenService.update(id, updateWordGenDto);
+    res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document');
+    res.setHeader('Content-Disposition', 'attachment; filename="file.docx"');
+    console.log('^-^File Data: ', fileData);
+    res.send(fileData);
   }
 
   @Delete(':id')
   remove(@Param('id') id: string) {
-    return this.wordGenService.remove(+id);
+    return this.wordGenService.remove(id);
   }
 }
