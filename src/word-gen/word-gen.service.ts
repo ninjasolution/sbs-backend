@@ -10,7 +10,6 @@ import { WordGen, WordGenDocument } from './schema/word-gen.schema';
 import PizZip from 'pizzip';
 import Docxtemplater from 'docxtemplater';
 import fs from 'fs';
-
 import { ContactdetailsService } from 'src/contactdetails/contactdetails.service';
 import { InvestmentsService } from 'src/investments/investments.service';
 import { InvestorTypeService } from 'src/investor-types/investor-types.service';
@@ -21,11 +20,8 @@ import { VerificationService } from 'src/verification/verification.service';
 import { FatcaService } from 'src/fatca/fatca.service';
 import { WholesaleService } from 'src/wholesale/wholesale.service';
 import { DeclarationService } from 'src/declaration/declaration.service';
-
-
-
-const PINATA_API_KEY = "9439ce4ff87828ca2ea8";
-const PINATA_API_SECRET = "7b16582ce90e9c5b067f93ae1d05dff6eee84c9206d0a35af1197c597013a82d";
+const FormData = require('form-data');
+const { Blob } = require('blob-util');
 
 
 
@@ -40,12 +36,12 @@ function flattenObject(obj, prefix = '', flattened = {}) {
         || key == 'owner3Sign' || key == 'owner4Sign') {
           const buffer: any = value;
           const imageData = buffer.toString('base64');
-          flattened[newPrefix] = {
-            data: imageData,
-            width: 300,
-            height: 140,
-            extension: 'png'
-          };
+          // flattened[newPrefix] = {
+          //   data: imageData,
+          //   width: 300,
+          //   height: 140,
+          //   extension: 'png'
+          // };
       } else 
         flattened[newPrefix] = value;
     } 
@@ -99,21 +95,22 @@ export class WordGenService {
     var formdata = new FormData();
     formdata.append('outputpath', outputPath);
     // Convert the Buffer to a Blob
-    const blob = new Blob([updatedContent]);
-    formdata.append('file', blob, outputPath);
+    // const blob = new Blob([updatedContent]);
+    formdata.append('file', updatedContent, outputPath);
 
     const resFile = await axios({
       method: "post",
       url: "https://api.pinata.cloud/pinning/pinFileToIPFS",
       data: formdata,
       headers: {
-        'pinata_api_key': `${PINATA_API_KEY}`,
-        'pinata_secret_api_key': `${PINATA_API_SECRET}`,
+        'pinata_api_key': `${process.env.PINATA_API_KEY}`,
+        'pinata_secret_api_key': `${process.env.PINATA_API_SECRET}`,
         "Content-Type": "multipart/form-data"
       },
     });
   
     const ipfsURL = "https://gateway.pinata.cloud/ipfs/"+ resFile.data.IpfsHash;
+    console.log('^-^ipfsURL : ', ipfsURL);
     return await fs.promises.writeFile(ipfsURL, updatedContent);
 
   }
@@ -146,12 +143,18 @@ export class WordGenService {
         flatobj8 = flattenObject(wholesales, 'wholesales'),
         flatobj9 = flattenObject(declarations, 'declarations');
 
-    let docxData = { ...flatobj0, ...flatobj1, ...flatobj2, ...flatobj3, ...flatobj4, ...flatobj5, ...flatobj6, ...flatobj7, ...flatobj8, ...flatobj9 };
+        let docxData = { ...flatobj0, ...flatobj1, 
+          ...flatobj2, ...flatobj3, 
+          ...flatobj4, ...flatobj5, 
+          // ...flatobj6, 
+          // ...flatobj7, 
+          // ...flatobj8, ...flatobj9 
+        };
 
     // console.log('^-^Before Create Content : ', docxData);
 
     // Get the contents of the given docx file.
-    let updatedcontent = await this.editWordDocument(tempDocName, wordgen);
+    let updatedcontent = await this.editWordDocument(tempDocName, docxData);
     await this.writeOutputFile(genDocName, updatedcontent);
 
     wordgen.userId = new Types.ObjectId(createwordgenDto.userId);
@@ -224,7 +227,8 @@ export class WordGenService {
     let docxData = { ...flatobj0, ...flatobj1, 
                     ...flatobj2, ...flatobj3, 
                     ...flatobj4, ...flatobj5, 
-                    ...flatobj6, ...flatobj7, 
+                    // ...flatobj6, 
+                    // ...flatobj7, 
                     // ...flatobj8, ...flatobj9 
                   };
 
