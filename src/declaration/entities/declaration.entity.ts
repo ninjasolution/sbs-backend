@@ -10,8 +10,8 @@ export class Declaration {
     owner2Sign : string;
     title : string;
     title2 : string;
-    type : Array<string>;
-    type2 : Array<string>;
+    type : string;
+    type2 : string;
     whosign : string;
     userId: Types.ObjectId;
 }

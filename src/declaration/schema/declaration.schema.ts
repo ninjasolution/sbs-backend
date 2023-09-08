@@ -27,9 +27,9 @@ export class Declaration {
     @Prop()
     title2 : string;
     @Prop()
-    type : Array<string>;
+    type : string;
     @Prop()
-    type2 : Array<string>;
+    type2 : string;
     @Prop()
     whosign : string;
     @Prop({

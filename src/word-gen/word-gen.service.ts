@@ -9,6 +9,7 @@ import { WordGen, WordGenDocument } from './schema/word-gen.schema';
 
 import PizZip from 'pizzip';
 import Docxtemplater from 'docxtemplater';
+const ImageModule = require('docxtemplater-image-module');
 import fs from 'fs';
 import { ContactdetailsService } from 'src/contactdetails/contactdetails.service';
 import { InvestmentsService } from 'src/investments/investments.service';
@@ -24,17 +25,24 @@ const FormData = require('form-data');
 const { Blob } = require('blob-util');
 
 
+function rb64i(buffer: any): string {
+  const binData = Buffer.from(buffer);
+  const bufferData = binData.toString('base64');
+  const imgUrl = `data:image/png;base64,${bufferData}`;
+  return imgUrl;
+}
 
 function flattenObject(obj, prefix = '', flattened = {}) {
   // if(prefix == 'fatcas') console.log('^-^FATCAs Data: ', obj);
   console.log('^-^', prefix, ' Count : ', Object.keys(obj._doc).length);
   for (let [key, value] of Object.entries(obj._doc)) {
-    const newPrefix = prefix ? `${prefix}.${key}` : key;
-    if(prefix === "verification") {
-      console.log('^-^ : ', prefix, '.', key, ': ');
-      if(key == 'investor1Sign' || key == 'investor2Sign' 
-        || key == 'owner1Sign' || key == 'owner2Sign'
-        || key == 'owner3Sign' || key == 'owner4Sign') {
+    var newPrefix = prefix ? `${prefix}.${key}` : key;
+    console.log('^-^ : ', prefix, '.', key, ': ');
+    switch (prefix) {
+      case "verification":
+        if (key == 'investor1Sign' || key == 'investor2Sign'
+          || key == 'owner1Sign' || key == 'owner2Sign'
+          || key == 'owner3Sign' || key == 'owner4Sign') {
           const buffer: any = value[0];
           const imageData = buffer.toString('base64');
           // flattened[newPrefix] = {
@@ -43,12 +51,59 @@ function flattenObject(obj, prefix = '', flattened = {}) {
           //   height: 140,
           //   extension: 'png'
           // };
-      } else 
+        }
+        break;
+      case "fatcas":
+        if (key == 'finalcial') {
+          if (value == 'Yes') {
+            flattened[newPrefix + 'Y'] = value;
+            flattened[newPrefix + 'N'] = '';
+          } else {
+            flattened[newPrefix + 'N'] = value;
+            flattened[newPrefix + 'Y'] = '';
+          }
+        } else if (key == 'istrust') {
+          if (value == 'Yes') flattened[newPrefix] = value;
+          else flattened[newPrefix] = 'No';
+        } else
+          flattened[newPrefix] = value;
+        break;
+      case "wholesales":
+        if (key == 'status') {
+          let statusval: any = value,
+            defaultval = ['investing', 'proinvestor', 'netasset', 'finance', 'sophiinvestor'];
+          defaultval.map(item => {
+            flattened[prefix + '.' + item] = '';
+          })
+          statusval.map((item, index) => {
+            // console.log('^-^', prefix + '.' + item);
+            if (item == 'investing') flattened[prefix + '.' + item] = '☒';
+            else if (item == 'proinvestor') flattened[prefix + '.' + item] = '☒';
+            else if (item == 'netasset') flattened[prefix + '.' + item] = '☒';
+            else if (item == 'finance') flattened[prefix + '.' + item] = '☒';
+            else if (item == 'sophiinvestor') flattened[prefix + '.' + item] = '☒';
+          });
+        } else
+          flattened[newPrefix] = value;
+        break;
+      case "declarations":
+        if (key == 'owner1Sign' || key == 'owner2Sign') {
+          const buffer: any = value;
+          const bufferstring = buffer.toString('base64');
+          const imageData = rb64i(bufferstring);
+          console.log('^-^', key, ': ', imageData);
+          flattened[newPrefix] = {
+            data: imageData,
+            width: 300,
+            height: 140,
+            extension: 'png'
+          };
+        } else
+          flattened[newPrefix] = value;
+        break;
+      default:
         flattened[newPrefix] = value;
-    } 
-    else {
-      console.log('^-^ : ', prefix, '.', key, ': ');
-      flattened[newPrefix] = value;
+        break;
     }
   }
 
@@ -72,14 +127,54 @@ export class WordGenService {
 
   async editWordDocument(templatePath: string, data: object): Promise<Buffer> {
     // Read the template file
-    const content = await fs.promises.readFile(templatePath, 'binary');
+    const content = await fs.promises.readFile('templates/' + templatePath, 'binary');
 
     // Load the template
     const zip = new PizZip(content);
     const doc = new Docxtemplater();
     doc.loadZip(zip);
 
-    // Set the data to be injected into the template
+    // Step 4: Attach the ImageModule to the doc instance
+    doc.attachModule(new ImageModule({
+      centered: false,
+      getImage: (tagValue, tagName) => {
+        // Check if the tag name is an image tag
+        if (tagName.startsWith('image')) {
+          const imageIndex = parseInt(tagName.slice(5)); // Get the index from the tag name
+          const imageData = tagValue[imageIndex]; // Get the image data based on the index
+          return {
+            data: imageData, // Base64 image data
+            width: 300,
+            height: 140,
+          };
+        }
+        return null;
+      },
+      getSize: (img, tagValue, tagName) => {
+        // Calculate the size of the image dynamically based on its dimensions
+        if (tagName.startsWith('image')) {
+          const width = img.width; // Get the width of the image
+          const height = img.height; // Get the height of the image
+          const maxWidth = 500; // Define the maximum width for the image
+          const maxHeight = 300; // Define the maximum height for the image
+    
+          // Calculate the new width and height while maintaining the aspect ratio
+          let newWidth = width;
+          let newHeight = height;
+          if (width > maxWidth) {
+            newWidth = maxWidth;
+            newHeight = (height * maxWidth) / width;
+          }
+          if (newHeight > maxHeight) {
+            newHeight = maxHeight;
+            newWidth = (width * maxHeight) / height;
+          }
+    
+          return [newWidth, newHeight];
+        }
+        return null;
+      },
+    }));    // Set the data to be injected into the template
     doc.setData(data);
     // console.log('^-^Doc Data : ', doc.getFullText());
     // Render the document
@@ -109,10 +204,10 @@ export class WordGenService {
         "Content-Type": "multipart/form-data"
       },
     });
-  
+
     // const ipfsURL = "https://gateway.pinata.cloud/ipfs/"+ resFile.data.IpfsHash;
     // console.log('^-^ipfsURL : ', ipfsURL);
-    await fs.promises.writeFile(outputPath, updatedContent);
+    await fs.promises.writeFile('files/' + outputPath, updatedContent);
     return await resFile.data.IpfsHash;
 
   }
@@ -121,37 +216,39 @@ export class WordGenService {
     const wordgen = new this.wordgenModel(createwordgenDto);
 
     let contactdetails = await this.contactdetailService.findOne(createwordgenDto.userId.toString()),
-        investments = await this.investmentService.findOne(createwordgenDto.userId.toString()),
-        investortypes = await this.investorTypeService.findOne(createwordgenDto.userId.toString()),
-        bankinfos = await this.bankinfoService.findOne(createwordgenDto.userId.toString()),
-        deposittypes = await this.deposittypeService.findOne(createwordgenDto.userId.toString()),
-        advisers = await this.adviserService.findOne(createwordgenDto.userId.toString()),
-        verifications = await this.verificationService.findOne(createwordgenDto.userId.toString()),
-        fatcas = await this.fatcaService.findOne(createwordgenDto.userId.toString()),
-        wholesales = await this.wholesaleService.findOne(createwordgenDto.userId.toString()),
-        declarations = await this.declarationService.findOne(createwordgenDto.userId.toString());
+      investments = await this.investmentService.findOne(createwordgenDto.userId.toString()),
+      investortypes = await this.investorTypeService.findOne(createwordgenDto.userId.toString()),
+      bankinfos = await this.bankinfoService.findOne(createwordgenDto.userId.toString()),
+      deposittypes = await this.deposittypeService.findOne(createwordgenDto.userId.toString()),
+      advisers = await this.adviserService.findOne(createwordgenDto.userId.toString()),
+      verifications = await this.verificationService.findOne(createwordgenDto.userId.toString()),
+      fatcas = await this.fatcaService.findOne(createwordgenDto.userId.toString()),
+      wholesales = await this.wholesaleService.findOne(createwordgenDto.userId.toString()),
+      declarations = await this.declarationService.findOne(createwordgenDto.userId.toString());
 
     let genDocName = createwordgenDto.userId.toString() + '_' + investortypes.label + '.docx',
-        tempDocName = 'template_' + investortypes.label + '.docx';
-        tempDocName = 'template.docx'; // this is just one for test.
-        let flatobj0 = flattenObject(contactdetails, 'contactdetails'),
-        flatobj1 = flattenObject(investments, 'investments'),
-        flatobj2 = flattenObject(investortypes, 'investortypes'),
-        flatobj3 = flattenObject(bankinfos, 'bankinfos'),
-        flatobj4 = flattenObject(deposittypes, 'deposittypes'),
-        flatobj5 = flattenObject(advisers, 'advisers'),
-        // flatobj6 = flattenObject(verifications, 'verifications'),
-        flatobj7 = flattenObject(fatcas, 'fatcas'),
-        flatobj8 = flattenObject(wholesales, 'wholesales'),
-        flatobj9 = flattenObject(declarations, 'declarations');
+      tempDocName = 'template_' + investortypes.label + '.docx';
+    tempDocName = 'template.docx'; // this is just one for test.
+    let flatobj0 = flattenObject(contactdetails, 'contactdetails'),
+      flatobj1 = flattenObject(investments, 'investments'),
+      flatobj2 = flattenObject(investortypes, 'investortypes'),
+      flatobj3 = flattenObject(bankinfos, 'bankinfos'),
+      flatobj4 = flattenObject(deposittypes, 'deposittypes'),
+      flatobj5 = flattenObject(advisers, 'advisers'),
+      // flatobj6 = flattenObject(verifications, 'verifications'),
+      flatobj7 = flattenObject(fatcas, 'fatcas'),
+      flatobj8 = flattenObject(wholesales, 'wholesales'),
+      flatobj9 = flattenObject(declarations, 'declarations');
 
-        let docxData = { ...flatobj0, ...flatobj1, 
-          ...flatobj2, ...flatobj3, 
-          ...flatobj4, ...flatobj5, 
-          // ...flatobj6, 
-          ...flatobj7, 
-          // ...flatobj8, ...flatobj9 
-        };
+    let docxData = {
+      ...flatobj0, ...flatobj1,
+      ...flatobj2, ...flatobj3,
+      ...flatobj4, ...flatobj5,
+      // ...flatobj6, 
+      ...flatobj7,
+      ...flatobj8,
+      ...flatobj9
+    };
 
     // console.log('^-^Before Create Content : ', docxData);
 
@@ -190,8 +287,8 @@ export class WordGenService {
       declarations = await this.declarationService.findOne(updatewordgenDto.userId.toString());
 
     let genDocName = updatewordgenDto.userId.toString() + '_' + investortypes.label + '.docx',
-        tempDocName = 'template_' + investortypes.label + '.docx';
-        tempDocName = 'template.docx'; // this is just one for test.
+      tempDocName = 'template_' + investortypes.label + '.docx';
+    tempDocName = 'template.docx'; // this is just one for test.
 
     // switch(investortypes.label) {
     //   case 'A & B':
@@ -214,26 +311,28 @@ export class WordGenService {
     //   default:
     //     break;
     // }
-  
+
 
     let flatobj0 = flattenObject(updateContactdetail, 'contactdetails'),
-        flatobj1 = flattenObject(investments, 'investments'),
-        flatobj2 = flattenObject(investortypes, 'investortypes'),
-        flatobj3 = flattenObject(bankinfos, 'bankinfos'),
-        flatobj4 = flattenObject(deposittypes, 'deposittypes'),
-        flatobj5 = flattenObject(advisers, 'advisers'),
-        // flatobj6 = flattenObject(verifications, 'verifications'),
-        flatobj7 = flattenObject(fatcas, 'fatcas'),
-        flatobj8 = flattenObject(wholesales, 'wholesales'),
-        flatobj9 = flattenObject(declarations, 'declarations');
+      flatobj1 = flattenObject(investments, 'investments'),
+      flatobj2 = flattenObject(investortypes, 'investortypes'),
+      flatobj3 = flattenObject(bankinfos, 'bankinfos'),
+      flatobj4 = flattenObject(deposittypes, 'deposittypes'),
+      flatobj5 = flattenObject(advisers, 'advisers'),
+      // flatobj6 = flattenObject(verifications, 'verifications'),
+      flatobj7 = flattenObject(fatcas, 'fatcas'),
+      flatobj8 = flattenObject(wholesales, 'wholesales'),
+      flatobj9 = flattenObject(declarations, 'declarations');
 
-    let docxData = { ...flatobj0, ...flatobj1, 
-                    ...flatobj2, ...flatobj3, 
-                    ...flatobj4, ...flatobj5, 
-                    // ...flatobj6, 
-                    ...flatobj7, 
-                    // ...flatobj8, ...flatobj9 
-                  };
+    let docxData = {
+      ...flatobj0, ...flatobj1,
+      ...flatobj2, ...flatobj3,
+      ...flatobj4, ...flatobj5,
+      // ...flatobj6, 
+      ...flatobj7,
+      ...flatobj8,
+      ...flatobj9
+    };
 
     // console.log('^-^Before Update Content : ', docxData);
 
