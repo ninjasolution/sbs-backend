@@ -2359,6 +2359,13 @@
   dependencies:
     "esutils" "^2.0.2"
 
+"docxtemplater-image-module-free@^1.1.1":
+  "integrity" "sha512-aWOzVQN7ggDYjfoy3pTTNrcrZ7/CJrQcI9cT+hmyHE6nRLR67nt5yPFPe9hm9VWbfYIED2fi+3itOnF0TE/RWQ=="
+  "resolved" "https://registry.npmjs.org/docxtemplater-image-module-free/-/docxtemplater-image-module-free-1.1.1.tgz"
+  "version" "1.1.1"
+  dependencies:
+    "xmldom" "^0.1.27"
+
 "docxtemplater-image-module@^3.1.0":
   "integrity" "sha512-dFzuGOhCXgZpzAO7hGJvGbjzUCvid+3L4lSjbBta+TnXuBb/55pqDQWeRZ38yMviu+QTaYreSHHdYHF1XvQlBA=="
   "resolved" "https://registry.npmjs.org/docxtemplater-image-module/-/docxtemplater-image-module-3.1.0.tgz"

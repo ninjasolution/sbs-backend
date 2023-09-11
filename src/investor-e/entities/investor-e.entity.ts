@@ -7,6 +7,7 @@ export class InvestorE {
     eowner2isexposedperson: string;
     eowner2state: string;
     eowner2suburb: string;
+    eowner2postCode: string;
     eowner3isexposedperson: string;
     eowner3postCode: string;
     eowner3state: string;

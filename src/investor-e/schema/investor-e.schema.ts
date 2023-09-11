@@ -22,6 +22,8 @@ export class InvestorE {
     @Prop()
     eowner2suburb: string;
     @Prop()
+    eowner2postCode: string;
+    @Prop()
     eowner3isexposedperson: string;
     @Prop()
     eowner3postCode: string;

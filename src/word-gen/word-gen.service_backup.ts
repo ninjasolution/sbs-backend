@@ -248,19 +248,17 @@ export class WordGenService {
       wholesales = await this.wholesaleService.findOne(createwordgenDto.userId.toString()),
       declarations = await this.declarationService.findOne(createwordgenDto.userId.toString());
 
-      let genDocName = contactdetails.userId.toString() + '_' + investortypes.label + '.docx',
-      tempDocName = (fatcas && fatcas.isUscitizen == 'Yes') ? 'template_' + investortypes.label + '_FATCA_Y.docx' : 'template_' + investortypes.label + '_FATCA_N.docx';
-    // tempDocName = 'template.docx'; // this is just one for test.
-
-
+    let genDocName = createwordgenDto.userId.toString() + '_' + investortypes.label + '.docx',
+      tempDocName = 'template_' + investortypes.label + '.docx';
+    tempDocName = 'template.docx'; // this is just one for test.
     let flatobj0 = flattenObject(contactdetails, 'contactdetails'),
       flatobj1 = flattenObject(investments, 'investments'),
       flatobj2 = flattenObject(investortypes, 'investortypes'),
-      flatobj2A = flattenObject(investorAs, 'investorAs'),
-      flatobj2B = flattenObject(investorBs, 'investorBs'),
-      flatobj2C = flattenObject(investorCs, 'investorCs'),
-      flatobj2D = flattenObject(investorDs, 'investorDs'),
-      flatobj2E = flattenObject(investorEs, 'investorEs'),
+      flatobj20 = flattenObject(investorAs, 'investorAs'),
+      flatobj21 = flattenObject(investorBs, 'investorBs'),
+      flatobj22 = flattenObject(investorCs, 'investorCs'),
+      flatobj23 = flattenObject(investorDs, 'investorDs'),
+      flatobj24 = flattenObject(investorEs, 'investorEs'),
       flatobj3 = flattenObject(bankinfos, 'bankinfos'),
       flatobj4 = flattenObject(deposittypes, 'deposittypes'),
       flatobj5 = flattenObject(advisers, 'advisers'),
@@ -275,38 +273,12 @@ export class WordGenService {
       ...flatobj4, ...flatobj5,
       ...flatobj6, ...flatobj7,
       ...flatobj8, ...flatobj9,
+      ...flatobj20, ...flatobj21,
+      ...flatobj22, ...flatobj23,
+      ...flatobj24
     };
     
-
-    if(investortypes) {
-      switch(investortypes.label) {
-        case 'A & B':
-          docxData = { ...docxData, ...flatobj2A, ...flatobj2B};
-          break;
-        case 'C & E':
-          docxData = { ...docxData, ...flatobj2C, ...flatobj2E};
-          break;
-        case 'C':
-          docxData = { ...docxData, ...flatobj2C};
-          break;
-        case 'C, D & E':
-          docxData = { ...docxData, ...flatobj2C, ...flatobj2D, ...flatobj2E};
-          break;
-        case 'A, D & E':
-          docxData = { ...docxData, ...flatobj2A, ...flatobj2D, ...flatobj2E};
-          break;
-        case 'C & D':
-          docxData = { ...docxData, ...flatobj2C, ...flatobj2D};
-          break;
-        case 'A & D':
-          docxData = { ...docxData, ...flatobj2A, ...flatobj2D};
-          break;
-        default:
-          break;
-      }
-    }
-
-    // console.log('^-^Before Create Content : ', investortypes);
+    console.log('^-^Before Create Content : ', investortypes);
 
     // Get the contents of the given docx file.
     let updatedcontent = await this.editWordDocument(tempDocName, docxData);
@@ -348,8 +320,8 @@ export class WordGenService {
       declarations = await this.declarationService.findOne(updatewordgenDto.userId.toString());
 
     let genDocName = updatewordgenDto.userId.toString() + '_' + investortypes.label + '.docx',
-      tempDocName = (fatcas && fatcas.isUscitizen == 'Yes') ? 'template_' + investortypes.label + '_FATCA_Y.docx' : 'template_' + investortypes.label + '_FATCA_N.docx';
-    // tempDocName = 'template.docx'; // this is just one for test.
+      tempDocName = 'template_' + investortypes.label + '.docx';
+    tempDocName = 'template.docx'; // this is just one for test.
 
 
     let flatobj0 = flattenObject(updateContactdetail, 'contactdetails'),
