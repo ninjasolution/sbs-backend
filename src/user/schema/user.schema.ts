@@ -36,6 +36,9 @@ import {
   
     @Prop()
     step: number;
+  
+    @Prop()
+    rtime: number;
 
     @Prop()
     gender: string;

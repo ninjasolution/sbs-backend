@@ -60,7 +60,7 @@ function flattenObject(obj, prefix = '', flattened = {}) {
           || key == 'owner3Sign' || key == 'owner4Sign' || key == 'backScreen' || key == 'frontScreen' || key == 'selectedImage') {
           const buffer: any = value;
           const bufferstring = buffer.toString('base64');
-          const imageType = (key == 'backScreen' || key == 'frontScreen' || key == 'selectedImage') ? 'jpeg' : 'png';
+          const imageType = (key == 'backScreen' || key == 'frontScreen' || key == 'selectedImage') ? 'jpg' : 'png';
           const dataUrl = `data:image/${imageType};base64,${bufferstring}`;
           flattened[newPrefix] = dataUrl;
         } else
@@ -157,7 +157,7 @@ export class WordGenService {
     doc.attachModule(new ImageModule({
       centered: false,
       getImage: (tagValue, tagName) => {
-        const base64Data = (tagName.includes('backScreen') || tagName.includes('frontScreen') || tagName.includes('selectedImage')) ? tagValue.replace(/^data:image\/jpeg;base64,/, '') : tagValue.replace(/^data:image\/png;base64,/, '');
+        const base64Data = (tagName.includes('backScreen') || tagName.includes('frontScreen') || tagName.includes('selectedImage')) ? tagValue.replace(/^data:image\/jpg;base64,/, '') : tagValue.replace(/^data:image\/png;base64,/, '');
         // const base64Data = tagValue.replace(/^data:image\/png;base64,/, '');
         const imageBuffer = Buffer.from(base64Data, 'base64');
         return imageBuffer;

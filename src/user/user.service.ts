@@ -19,6 +19,7 @@ import { User } from './interfaces/user.interface';
 import { time } from 'console';
 import { ChangeUserPasswordDto } from './dto/change-user-password.dto';
 import { ChangeUserStepDto } from './dto/change-user-step.dto';
+import { ChangeUserRtimeDto } from './dto/change-user-rtime.dto';
 import { ChangeUserImagedDto } from './dto/change-user-image.dto';
 
 @Injectable()
@@ -107,6 +108,7 @@ export class UserService {
             surname: user.surname,
             id: user._id,
             step: user.step,
+            time: user.rtime,
             exp: expiration_time,
             accessToken: await this.authService.createAccessToken(user._id),
             refreshToken: await this.authService.createRefreshToken(req, user._id),
@@ -194,7 +196,7 @@ export class UserService {
 
     }
 
-    //UPDATE RETAILER Step
+    //UPDATE User Step
     async updateStep(req: Request, changeUserStepDto: ChangeUserStepDto) {
 
         const user = await this.findUserByEmail(changeUserStepDto.email);
@@ -203,6 +205,17 @@ export class UserService {
         user.step = changeUserStepDto.step;
 
         return await this.userModel.updateOne({ email: changeUserStepDto.email }, user);
+    }
+
+    //UPDATE User Step
+    async updateRtime(req: Request, changeUserrtimeDto: ChangeUserRtimeDto) {
+
+        const user = await this.findUserByEmail(changeUserrtimeDto.email);
+        console.log('^-^Change Rtime :', changeUserrtimeDto);
+        this.isUserBlocked(user);
+        user.rtime = changeUserrtimeDto.rtime;
+
+        return await this.userModel.updateOne({ email: changeUserrtimeDto.email }, user);
     }
 
     //UPDATE USER IMAGE

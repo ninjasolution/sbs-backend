@@ -9,6 +9,7 @@ export class User {
     password: string;
     phone: string;
     step: number;
+    rtime: number;
     roles: [string];
     verification: UUID;
     verified: boolean;

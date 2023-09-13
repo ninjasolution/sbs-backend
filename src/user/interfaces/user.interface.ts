@@ -10,6 +10,7 @@ export interface User extends Document {
     roles: [string];
     phone: string;
     step: number;
+    rtime: number;
     verification: string;
     verified: boolean;
     verificationExpires: Date;

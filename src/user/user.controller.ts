@@ -13,6 +13,7 @@ import { RefreshAccessTokenDto } from './dto/refresh-access-token.dto';
 import { ChangeUserPasswordDto } from './dto/change-user-password.dto';
 import { ChangeUserStepDto } from './dto/change-user-step.dto';
 import { ChangeUserImagedDto } from './dto/change-user-image.dto';
+import { ChangeUserRtimeDto } from './dto/change-user-rtime.dto';
 
 import {
     ApiCreatedResponse,
@@ -223,6 +224,21 @@ export class UserController {
     @ApiOkResponse({})
     async updateStep(@Req() req: Request, @Body() changeUserStepDto: ChangeUserStepDto) {
         return await this.userService.updateStep(req, changeUserStepDto);
+    }
+    
+    @Post('update-time')
+    @HttpCode(HttpStatus.OK)
+    @ApiOperation({summary: 'Step User Reset',})
+    @UseGuards(AuthGuard('jwt'))
+    // @Roles('admin', 'retailer')
+    @ApiBearerAuth()
+    @ApiHeader({
+        name: 'Bearer',
+        description: 'the token we need for auth.'
+    })
+    @ApiOkResponse({})
+    async updateRtime(@Req() req: Request, @Body() changeUserRtimeDto: ChangeUserRtimeDto) {
+        return await this.userService.updateRtime(req, changeUserRtimeDto);
     }
     
     /**
