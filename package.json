@@ -32,6 +32,7 @@
     "@nestjs/passport": "^10.0.0",
     "@nestjs/platform-express": "^10.0.0",
     "@nestjs/swagger": "^7.1.8",
+    "@sendgrid/mail": "^7.7.0",
     "@types/mongoose": "^5.11.97",
     "@types/uuid": "^9.0.2",
     "@types/validator": "^13.11.1",

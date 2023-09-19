@@ -952,6 +952,29 @@
   "resolved" "https://registry.npmjs.org/@oozcitak/util/-/util-8.3.4.tgz"
   "version" "8.3.4"
 
+"@sendgrid/client@^7.7.0":
+  "integrity" "sha512-SxH+y8jeAQSnDavrTD0uGDXYIIkFylCo+eDofVmZLQ0f862nnqbC3Vd1ej6b7Le7lboyzQF6F7Fodv02rYspuA=="
+  "resolved" "https://registry.npmjs.org/@sendgrid/client/-/client-7.7.0.tgz"
+  "version" "7.7.0"
+  dependencies:
+    "@sendgrid/helpers" "^7.7.0"
+    "axios" "^0.26.0"
+
+"@sendgrid/helpers@^7.7.0":
+  "integrity" "sha512-3AsAxfN3GDBcXoZ/y1mzAAbKzTtUZ5+ZrHOmWQ279AuaFXUNCh9bPnRpN504bgveTqoW+11IzPg3I0WVgDINpw=="
+  "resolved" "https://registry.npmjs.org/@sendgrid/helpers/-/helpers-7.7.0.tgz"
+  "version" "7.7.0"
+  dependencies:
+    "deepmerge" "^4.2.2"
+
+"@sendgrid/mail@^7.7.0":
+  "integrity" "sha512-5+nApPE9wINBvHSUxwOxkkQqM/IAAaBYoP9hw7WwgDNQPxraruVqHizeTitVtKGiqWCKm2mnjh4XGN3fvFLqaw=="
+  "resolved" "https://registry.npmjs.org/@sendgrid/mail/-/mail-7.7.0.tgz"
+  "version" "7.7.0"
+  dependencies:
+    "@sendgrid/client" "^7.7.0"
+    "@sendgrid/helpers" "^7.7.0"
+
 "@sinclair/typebox@^0.27.8":
   "integrity" "sha512-+Fj43pSMwJs4KRrH/938Uf+uAELIgVBmQzg/q1YG10djyfA3TnrU8N8XzqCh/okZdszqBQTZf96idMfE5lnwTA=="
   "resolved" "https://registry.npmjs.org/@sinclair/typebox/-/typebox-0.27.8.tgz"
@@ -1664,6 +1687,13 @@
   "integrity" "sha512-Oei9OH4tRh0YqU3GxhX79dM/mwVgvbZJaSNaRk+bshkj0S5cfHcgYakreBjrHwatXKbz+IoIdYLxrKim2MjW0Q=="
   "resolved" "https://registry.npmjs.org/asynckit/-/asynckit-0.4.0.tgz"
   "version" "0.4.0"
+
+"axios@^0.26.0":
+  "integrity" "sha512-fPwcX4EvnSHuInCMItEhAGnaSEXRBjtzh9fOtsE6E1G6p7vl7edEeZe11QHf18+6+9gR5PbKV/sGKNaD8YaMeA=="
+  "resolved" "https://registry.npmjs.org/axios/-/axios-0.26.1.tgz"
+  "version" "0.26.1"
+  dependencies:
+    "follow-redirects" "^1.14.8"
 
 "axios@^1.5.0":
   "integrity" "sha512-D4DdjDo5CY50Qms0qGQTTw6Q44jl7zRwY7bthds06pUGfChBCTcQs+N743eFWGEd6pRTMd6A+I87aWyFV5wiZQ=="
@@ -2940,7 +2970,7 @@
   "resolved" "https://registry.npmjs.org/flatted/-/flatted-3.2.7.tgz"
   "version" "3.2.7"
 
-"follow-redirects@^1.15.0":
+"follow-redirects@^1.14.8", "follow-redirects@^1.15.0":
   "integrity" "sha512-VQLG33o04KaQ8uYi2tVNbdrWp1QWxNNea+nmIB4EVM28v0hmP17z7aG1+wAkNzVq4KeXTq3221ye5qTJP91JwA=="
   "resolved" "https://registry.npmjs.org/follow-redirects/-/follow-redirects-1.15.2.tgz"
   "version" "1.15.2"

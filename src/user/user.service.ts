@@ -1,7 +1,7 @@
 import { ResetPasswordDto } from './dto/reset-password.dto';
 import { Request } from 'express';
 import { AuthService } from './../auth/auth.service';
-import { MailService } from './../services/mail.service';
+import { EmailService } from './../services/mail.service';
 import { LoginUserDto } from './dto/login-user.dto';
 import { Injectable, BadRequestException, NotFoundException, ConflictException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
@@ -33,7 +33,7 @@ export class UserService {
         @InjectModel('User') private readonly userModel: Model<User>,
         @InjectModel('ForgotPassword') private readonly forgotPasswordModel: Model<ForgotPassword>,
         private readonly authService: AuthService,
-        public mailService: MailService,
+        public mailService: EmailService,
     ) { }
 
     // ┌─┐┬─┐┌─┐┌─┐┌┬┐┌─┐  ┬ ┬┌─┐┌─┐┬─┐
@@ -289,7 +289,7 @@ export class UserService {
         const userRegistrationInfo = {
             name: data.user.displayname,
             email: data.user.email,
-            verified: data.user.verified,
+            verified: false,
             email_status: email_status,
             link: data.link,
             result: "success"
@@ -345,14 +345,14 @@ export class UserService {
         return {
             name: user.displayname,
             email: user.email,
-            verify: true
+            verify: user.verified
         };
     }
 
     
     private async checkPassword(attemptPass: string, user) {
         const match = await bcrypt.compare(attemptPass, user.password);
-        console.log('^-^Compare Pass: ', attemptPass, user.password, match);
+        // console.log('^-^Compare Pass: ', attemptPass, user.password, match);
         if (!match) {
             await this.passwordsDoNotMatch(user);
             throw new NotFoundException('Wrong email or password.');

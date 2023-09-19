@@ -4,7 +4,7 @@ import { WordGenController } from './word-gen.controller';
 import { MongooseModule } from '@nestjs/mongoose';
 import { WordGen } from './entities/word-gen.entity';
 import { WordGenSchema } from './schema/word-gen.schema';
-
+import { EmailService } from './../services/mail.service';
 import { ContactdetailsService } from 'src/contactdetails/contactdetails.service';
 import { Contactdetail } from 'src/contactdetails/entities/contactdetail.entity';
 import { ContactdetailSchema } from 'src/contactdetails/schema/contactdetails.schema';
@@ -61,6 +61,6 @@ import { DeclarationService } from 'src/declaration/declaration.service';
 
   ],
   controllers: [WordGenController],
-  providers: [WordGenService, ContactdetailsService, InvestmentsService, InvestorTypeService, InvestorAService, InvestorBService, InvestorCService, InvestorDService, InvestorEService, BankinfoService, DeposittypeService, AdviserService, VerificationService, FatcaService, WholesaleService, DeclarationService]
+  providers: [WordGenService, ContactdetailsService, InvestmentsService, InvestorTypeService, InvestorAService, InvestorBService, InvestorCService, InvestorDService, InvestorEService, BankinfoService, DeposittypeService, AdviserService, VerificationService, FatcaService, WholesaleService, DeclarationService, EmailService]
 })
 export class WordGenModule {}

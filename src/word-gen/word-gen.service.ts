@@ -6,7 +6,7 @@ import axios from "axios";
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
 import { WordGen, WordGenDocument } from './schema/word-gen.schema';
-
+import { EmailService } from './../services/mail.service';
 import PizZip from 'pizzip';
 import Docxtemplater from 'docxtemplater';
 import fs from 'fs';
@@ -142,7 +142,8 @@ export class WordGenService {
     private readonly verificationService: VerificationService,
     private readonly fatcaService: FatcaService,
     private readonly wholesaleService: WholesaleService,
-    private readonly declarationService: DeclarationService) { }
+    private readonly declarationService: DeclarationService,
+    public mailService: EmailService) { }
 
   async editWordDocument(templatePath: string, data: object): Promise<Buffer> {
     // Read the template file
