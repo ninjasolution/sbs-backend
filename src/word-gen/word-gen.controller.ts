@@ -42,8 +42,7 @@ export class WordGenController {
     const fileData = await this.wordGenService.update(id, updateWordGenDto);
     res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document');
     res.setHeader('Content-Disposition', 'attachment; filename="file.docx"');
-    console.log('^-^File Data: ', fileData);
-    res.send("https://gateway.pinata.cloud/ipfs/"+fileData);
+    res.send(process.env.IPFS_CLOUD + fileData);
   }
 
   @Delete(':id')

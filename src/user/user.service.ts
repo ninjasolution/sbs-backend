@@ -5,7 +5,7 @@ import { EmailService } from './../services/mail.service';
 import { LoginUserDto } from './dto/login-user.dto';
 import { Injectable, BadRequestException, NotFoundException, ConflictException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import { Model, Types } from 'mongoose';
 import { v4 } from 'uuid';
 import { addHours } from 'date-fns';
 import * as bcrypt from 'bcrypt';
@@ -138,9 +138,20 @@ export class UserService {
     async forgotPassword(req: Request, createForgotPasswordDto: CreateForgotPasswordDto) {
         await this.findByEmail(createForgotPasswordDto.email);
         await this.saveForgotPassword(req, createForgotPasswordDto);
+        const forgotpassword = await this.findVerificationCodeByEmail(createForgotPasswordDto);
+        const data = {
+            recovery : {
+                email: forgotpassword.email,
+                code: forgotpassword.verification
+            }
+        }
+        // console.log('^-^ Forgot Password Saved. ', data);
+        const status = await this.mailService.recoveryPassword(data).then((result) => {
+            return result;
+        });
         return {
             email: createForgotPasswordDto.email,
-            message: 'verification sent.',
+            message: status,
         };
     }
 
@@ -176,7 +187,8 @@ export class UserService {
 
     // GET ONE USER
     async getOneUser(id: string): Promise<User> {
-        return await this.userModel.findById(id);
+        const userid = new Types.ObjectId(id);
+        return await this.userModel.findById(userid);
     }
 
     //UPDATE RETAILER PASSWORD
@@ -424,13 +436,28 @@ export class UserService {
         await forgotPassword.save();
     }
 
+    private async findVerificationCodeByEmail(forgotPasswordDto: CreateForgotPasswordDto): Promise<ForgotPassword> {
+        const forgotPassword = await this.forgotPasswordModel.findOne({
+            email: forgotPasswordDto.email,
+            firstUsed: false,
+            finalUsed: false,
+            expires: { $gt: new Date() },
+        });
+        if (!forgotPassword) {
+            throw new BadRequestException('Bad request.');
+        }
+        return forgotPassword;
+    }
+
     private async findForgotPasswordByEmail(resetPasswordDto: ResetPasswordDto): Promise<ForgotPassword> {
+        // console.log('^-^resetPassword : ', resetPasswordDto);
         const forgotPassword = await this.forgotPasswordModel.findOne({
             email: resetPasswordDto.email,
             firstUsed: true,
             finalUsed: false,
             expires: { $gt: new Date() },
         });
+        // console.log('^-^ForgotPassword record : ', forgotPassword);
         if (!forgotPassword) {
             throw new BadRequestException('Bad request.');
         }

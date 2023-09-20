@@ -352,11 +352,11 @@ export class UserController {
     @Post('reset-password')
     @HttpCode(HttpStatus.OK)
     @ApiOperation({summary: 'Reset password after verify reset password',})
-    @ApiBearerAuth()
-    @ApiHeader({
-        name: 'Bearer',
-        description: 'the token we need for auth.'
-    })
+    // @ApiBearerAuth()
+    // @ApiHeader({
+    //     name: 'Bearer',
+    //     description: 'the token we need for auth.'
+    // })
     @ApiOkResponse({})
     async resetPassword(@Body() resetPasswordDto: ResetPasswordDto) {
         return await this.userService.resetPassword(resetPasswordDto);

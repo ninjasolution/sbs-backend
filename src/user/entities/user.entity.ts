@@ -1,5 +1,3 @@
-import { UUID } from "crypto";
-
 export class User {
     firstname: string;
     surname: string;
@@ -11,7 +9,7 @@ export class User {
     step: number;
     rtime: number;
     roles: [string];
-    verification: UUID;
+    verification: string;
     verified: boolean;
     verificationExpires: Date;
     loginAttempts: Number;

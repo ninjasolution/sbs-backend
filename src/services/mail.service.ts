@@ -4,6 +4,7 @@ import { ReportReviewTemplate } from '../emailTemplate/reportReviewTemplate';
 import { ReportContactUsTemplate } from '../emailTemplate/reportContactUsTemplate';
 import { VerifyAccountTemplate } from '../emailTemplate/verifyAccountTemplate';
 import { RecoveryPasswordTemplate } from '../emailTemplate/recoveryPasswordTemplate';
+import { WordDocGenTemplate } from '../emailTemplate/wordDocGenTemplate';
 
 @Injectable()
 export class EmailService  {
@@ -76,7 +77,7 @@ export class EmailService  {
       };
 
       const status = await this.mailService.send(message).then(res => {
-        console.log('^-^Success : ', res);
+        // console.log('^-^Success : ', res);
         return 'success';
       }).catch(err => {
         console.log('^-^Error : ', err);
@@ -96,12 +97,12 @@ export class EmailService  {
       const message: any = {
         from,
         to: `${data.recipientMail}`,
-        subject: `${data.firstName} ${data.lastName} has submitted a contact form on the ${data.appName} APP from: ${data.websiteUrl}`,
+        subject: `${data.firstname} ${data.surname} has submitted a contact form on the SBS.AU - form APP from: ${process.env.CONSUMER_URI}`,
         html: obj.getHtmlTemplate(),
       };
 
       const status = await this.mailService.send(message).then(res => {
-        console.log('^-^Success : ', res);
+        // console.log('^-^Success : ', res);
         return 'success';
       }).catch(err => {
         console.log('^-^Error : ', err);
@@ -111,4 +112,52 @@ export class EmailService  {
       return status;
     }
 
+    async sendUser2Company(data: any) {
+
+      const obj = new WordDocGenTemplate(data);
+  
+        const from = `${data.email}`;
+  
+        const message: any = {
+          from,
+          to: `${process.env.SEMD_GRID_COMPANY_MAIL}`,
+          subject: `${data.firstname} ${data.surname} has submitted a contact form on the SBS.AU - form APP from: ${process.env.CONSUMER_URI}`,
+          html: obj.getHtmlTemplate(),
+        };
+  
+        const status = await this.mailService.send(message).then(res => {
+          // console.log('^-^Success : ', res);
+          return 'success';
+        }).catch(err => {
+          console.log('^-^Error : ', err);
+          return 'failed';
+        })
+  
+        return status;
+      }
+
+      async sendCompany2User(data: any) {
+  
+        const obj = new WordDocGenTemplate(data);
+    
+          const from = `${process.env.SEMD_GRID_COMPANY_MAIL}`;
+    
+          const message: any = {
+            from,
+            to: `${data.email}`,
+            subject: `${data.firstname} ${data.surname} has submitted a contact form on the SBS.AU - form APP from: ${process.env.CONSUMER_URI}`,
+            html: obj.getHtmlTemplate(),
+          };
+    
+          const status = await this.mailService.send(message).then(res => {
+            // console.log('^-^Success : ', res);
+            return 'success';
+          }).catch(err => {
+            console.log('^-^Error : ', err);
+            return 'failed';
+          })
+    
+          return status;
+        }
+  
 }

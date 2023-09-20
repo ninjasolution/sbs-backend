@@ -40,6 +40,7 @@ import { VerificationService } from 'src/verification/verification.service';
 import { FatcaService } from 'src/fatca/fatca.service';
 import { WholesaleService } from 'src/wholesale/wholesale.service';
 import { DeclarationService } from 'src/declaration/declaration.service';
+
 @Module({
   imports: [
     MongooseModule.forFeature([{ name: WordGen.name, schema: WordGenSchema }]),
@@ -58,7 +59,6 @@ import { DeclarationService } from 'src/declaration/declaration.service';
     MongooseModule.forFeature([{ name: Fatca.name, schema: FatcaSchema}]),
     MongooseModule.forFeature([{ name: Wholesale.name, schema: WholesaleSchema}]),
     MongooseModule.forFeature([{ name: Declaration.name, schema: DeclarationSchema}]),
-
   ],
   controllers: [WordGenController],
   providers: [WordGenService, ContactdetailsService, InvestmentsService, InvestorTypeService, InvestorAService, InvestorBService, InvestorCService, InvestorDService, InvestorEService, BankinfoService, DeposittypeService, AdviserService, VerificationService, FatcaService, WholesaleService, DeclarationService, EmailService]

@@ -204,7 +204,7 @@ export class WordGenService {
     return updatedContent;
   }
 
-  async writeOutputFile(outputPath: string, updatedContent: Buffer): Promise<string> {
+  async writeOutputFile(outputPath: string, updatedContent: Buffer, user: any): Promise<string> {
     console.log('Output file ' + outputPath + ' has been written successfully.');
     var formdata = new FormData();
     formdata.append('outputpath', outputPath);
@@ -215,7 +215,7 @@ export class WordGenService {
 
     const resFile = await axios({
       method: "post",
-      url: "https://api.pinata.cloud/pinning/pinFileToIPFS",
+      url: process.env.IPFS_PATH,
       data: formdata,
       headers: {
         'pinata_api_key': `${process.env.PINATA_API_KEY}`,
@@ -223,8 +223,13 @@ export class WordGenService {
         "Content-Type": "multipart/form-data"
       },
     });
-    console.log('^-^-^-^', resFile);
-    // const ipfsURL = "https://gateway.pinata.cloud/ipfs/"+ resFile.data.IpfsHash;
+    // console.log('^-^-^-^', resFile);
+    const ipfsURL = process.env.IPFS_CLOUD + resFile.data.IpfsHash;
+    // send mails.
+    user = { ...user, ...{ docpath: ipfsURL }};
+    // console.log('^-^Send mail : ', user);
+    await this.mailService.sendCompany2User(user);
+    await this.mailService.sendUser2Company(user);
     // console.log('^-^ipfsURL : ', ipfsURL);
     return await resFile.data.IpfsHash;
 
@@ -308,10 +313,11 @@ export class WordGenService {
     }
 
     // console.log('^-^Before Create Content : ', investortypes);
-
+    let user: any = await this.contactdetailService.findOne(createwordgenDto.userId.toString());
+    // console.log('^-^UserInfo : ', user.userId);
     // Get the contents of the given docx file.
     let updatedcontent = await this.editWordDocument(tempDocName, docxData);
-    createwordgenDto.orientation = await this.writeOutputFile(genDocName, updatedcontent);
+    createwordgenDto.orientation = await this.writeOutputFile(genDocName, updatedcontent, user.userId._doc);
 
     wordgen.userId = new Types.ObjectId(createwordgenDto.userId);
     wordgen.save();
@@ -408,12 +414,14 @@ export class WordGenService {
 
 
     // console.log('^-^Before Create Content : ', investortypes);
+    let user: any = await this.contactdetailService.findOne(updatewordgenDto.userId.toString());
+    // console.log('^-^UserInfo : ', user.userId);
 
     let updatedcontent = await this.editWordDocument(tempDocName, docxData);
 
     updatewordgenDto.userId = new Types.ObjectId(updatewordgenDto.userId);
 
-    updatewordgenDto.orientation = await this.writeOutputFile(genDocName, updatedcontent);
+    updatewordgenDto.orientation = await this.writeOutputFile(genDocName, updatedcontent, user.userId._doc);
 
     this.wordgenModel.findByIdAndUpdate(id, updatewordgenDto).lean().exec();
     return updatewordgenDto.orientation;
