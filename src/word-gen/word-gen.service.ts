@@ -170,8 +170,11 @@ export class WordGenService {
           const src: any = img;
           // const imgdata: any = cb64i(src);
           console.log('^-^Image tag : ', tagName);
-          if(tagName == 'declarations.owner2Sign') console.log('^-^Image Data : ', img);
-          if(img == null || img == '' || img == undefined) return [300, 140];
+          if(tagName == 'declarations.owner2Sign') console.log('^-^Image Data : ', img.toString().substr(20));
+          if(img == null || img == '' || img == undefined) {
+            console.log('^-^Get Images : ', tagName, img.toString().substr(20));
+            return [300, 140];
+          }
           const sizeOf = require('image-size');
           const dimensions = sizeOf(img);
           console.log('^-^Get Images : ', tagName, dimensions.width, dimensions.height);
@@ -194,7 +197,7 @@ export class WordGenService {
         return [300, 140];
       },
     }));
-    Object.getOwnPropertyNames(data).map(key => console.log('^-^', key));
+    // Object.getOwnPropertyNames(data).map(key => console.log('^-^', key));
     doc.setData(data);
     // console.log('^-^Doc Data : ', doc.getFullText());
     // Render the document
@@ -213,7 +216,7 @@ export class WordGenService {
     // Convert the Buffer to a Blob
     // const blob = new Blob([updatedContent]);
     formdata.append('file', updatedContent, outputPath);
-    await fs.promises.writeFile('files/' + outputPath, updatedContent);
+    // await fs.promises.writeFile('files/' + outputPath, updatedContent);
 
     const resFile = await axios({
       method: "post",
@@ -229,8 +232,9 @@ export class WordGenService {
     const ipfsURL = process.env.IPFS_CLOUD + resFile.data.IpfsHash;
     // send mails.
     user = { ...user, ...{ docpath: ipfsURL }};
-    // console.log('^-^Send mail : ', user);
+    console.log('^-^Send mail Company2User ');
     await this.mailService.sendCompany2User(user);
+    console.log('^-^Send mail User2Company ');
     await this.mailService.sendUser2Company(user);
     // console.log('^-^ipfsURL : ', ipfsURL);
     return await resFile.data.IpfsHash;
