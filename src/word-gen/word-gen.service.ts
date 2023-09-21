@@ -169,7 +169,9 @@ export class WordGenService {
         if (tagName === 'verifications.owner1Sign' || tagName === 'verifications.investor2Sign' || tagName === 'verifications.investor3Sign' || tagName === 'verifications.investor4Sign' || tagName === 'verifications.owner1Sign' || tagName === 'verifications.owner2Sign' || tagName === 'verifications.backScreen' || tagName === 'verifications.frontScreen' || tagName === 'verifications.selectedImage' || tagName === 'declarations.owner1Sign' || tagName === 'declarations.owner2Sign') {
           const src: any = img;
           // const imgdata: any = cb64i(src);
-          // console.log('^-^Image Data ', tagName, imgdata);
+          console.log('^-^Image tag : ', tagName);
+          if(tagName == 'declarations.owner2Sign') console.log('^-^Image Data : ', img);
+          if(img == null || img == '' || img == undefined) return [300, 140];
           const sizeOf = require('image-size');
           const dimensions = sizeOf(img);
           console.log('^-^Get Images : ', tagName, dimensions.width, dimensions.height);
@@ -254,7 +256,7 @@ export class WordGenService {
       wholesales = await this.wholesaleService.findOne(createwordgenDto.userId.toString()),
       declarations = await this.declarationService.findOne(createwordgenDto.userId.toString());
 
-      let genDocName = contactdetails.userId.toString() + '_' + investortypes.label + '.docx',
+      let genDocName = createwordgenDto.userId.toString() + '_' + investortypes.label + '.docx',
       tempDocName = (fatcas && fatcas.isUscitizen == 'Yes') ? 'template_' + investortypes.label + '_FATCA_Y.docx' : 'template_' + investortypes.label + '_FATCA_N.docx';
     // tempDocName = 'template.docx'; // this is just one for test.
 
