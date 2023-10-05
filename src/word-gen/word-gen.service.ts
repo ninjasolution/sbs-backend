@@ -58,6 +58,27 @@ function flattenObject(obj, prefix = '', flattened = {}) {
     if(key == '__v' || key == 'userId') continue;
     // console.log('^-^ : ', prefix, '.', key, ': ');
     switch (prefix) {
+      case "investorCs":
+        // console.log('^-^' + newPrefix + ' =', value);
+        if(key == "cbusinessdetail") flattened[newPrefix] = value
+        else flattened[`${prefix}.cbusinessdetail`] = '';
+        if(key == "cofficesuburb") flattened[newPrefix] = value
+        else flattened[`${prefix}.cofficesuburb`] = '';
+        if(key == "cofficesuburb") flattened[newPrefix] = value
+        else flattened[`${prefix}.cofficesuburb`] = '';
+        if(key == "compaytype") {
+          if(value == "Public") {
+            flattened[`${prefix}.cdirector1`] = '';
+            flattened[`${prefix}.cdirector2`] = '';
+            flattened[`${prefix}.cdirector3`] = '';
+            flattened[`${prefix}.cdirector4`] = '';
+            flattened[newPrefix] = value;
+          } else {
+            flattened[newPrefix] = value;
+          }
+        } else 
+          flattened[newPrefix] = value;
+        break;
       case "verifications":
         if (key == 'investor1Sign' || key == 'investor2Sign'
           || key == 'owner1Sign' || key == 'owner2Sign'
