@@ -40,8 +40,11 @@ export class WordGenController {
   })
   async update(@Param('id') id: string, @Body() updateWordGenDto: UpdateWordGenDto, @Res() res: Response) {
     const fileData = await this.wordGenService.update(id, updateWordGenDto);
-    res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document');
-    res.setHeader('Content-Disposition', 'attachment; filename="file.docx"');
+    // Send the PDF as a response
+    res.setHeader('Content-Type', 'application/pdf');
+    res.setHeader('Content-Disposition', `attachment; filename=${process.env.IPFS_CLOUD + fileData}.pdf`);
+    // res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document');
+    // res.setHeader('Content-Disposition', 'attachment; filename="file.docx"');
     res.send(process.env.IPFS_CLOUD + fileData);
   }
 

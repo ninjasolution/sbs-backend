@@ -26,6 +26,10 @@ import { FatcaService } from 'src/fatca/fatca.service';
 import { WholesaleService } from 'src/wholesale/wholesale.service';
 import { DeclarationService } from 'src/declaration/declaration.service';
 import { InvestorA } from 'src/investor-a/entities/investor-a.entity';
+import mammoth from 'mammoth';
+import puppeteer from 'puppeteer';
+import * as libreofficeConvert from 'libreoffice-convert';
+
 const FormData = require('form-data');
 const { Blob } = require('blob-util');
 const ImageModule = require('docxtemplater-image-module-free');
@@ -144,6 +148,18 @@ export class WordGenService {
     private readonly wholesaleService: WholesaleService,
     private readonly declarationService: DeclarationService,
     public mailService: EmailService) { }
+    
+    async convertToPdf(inputFile: Buffer, outputFilePath: string): Promise<any> {
+      return new Promise((resolve, reject) => {
+        libreofficeConvert.convert(inputFile, '.pdf', undefined, (err, result) => {
+          if (err) {
+            reject(err);
+          } else {
+            resolve(result);
+          }
+        });
+      });
+    }
 
   async editWordDocument(templatePath: string, data: object): Promise<Buffer> {
     // Read the template file
@@ -169,15 +185,15 @@ export class WordGenService {
         if (tagName === 'verifications.owner1Sign' || tagName === 'verifications.investor2Sign' || tagName === 'verifications.investor3Sign' || tagName === 'verifications.investor4Sign' || tagName === 'verifications.owner1Sign' || tagName === 'verifications.owner2Sign' || tagName === 'verifications.backScreen' || tagName === 'verifications.frontScreen' || tagName === 'verifications.selectedImage' || tagName === 'declarations.owner1Sign' || tagName === 'declarations.owner2Sign') {
           const src: any = img;
           // const imgdata: any = cb64i(src);
-          console.log('^-^Image tag : ', tagName);
-          if(tagName == 'declarations.owner2Sign') console.log('^-^Image Data : ', img.toString().substr(20));
+          // console.log('^-^Image tag : ', tagName);
+          // if(tagName == 'declarations.owner2Sign') console.log('^-^Image Data : ', img.toString().substr(20));
           if(img == null || img == '' || img == undefined) {
-            console.log('^-^Get Images : ', tagName, img.toString().substr(20));
+            // console.log('^-^Get Images : ', tagName, img.toString().substr(20));
             return [300, 140];
           }
           const sizeOf = require('image-size');
           const dimensions = sizeOf(img);
-          console.log('^-^Get Images : ', tagName, dimensions.width, dimensions.height);
+          // console.log('^-^Get Images : ', tagName, dimensions.width, dimensions.height);
           const { width, height } = dimensions;
 
           let newWidth = width;
@@ -210,13 +226,26 @@ export class WordGenService {
   }
 
   async writeOutputFile(outputPath: string, updatedContent: Buffer, user: any): Promise<string> {
+
+    // // Convert DOCX content to HTML
+    // const { value: html } = await mammoth.convertToHtml({ buffer: updatedContent });
+    // // console.log('HTML content for DOCX: ', html);
+    // // Generate PDF from HTML using Puppeteer
+    // const browser = await puppeteer.launch({
+    //   headless: "new", // or false, depending on your use case
+    // });
+    // const page = await browser.newPage();
+    // await page.setContent(html);
+    // const pdfBuffer = await page.pdf();
+    // await browser.close();
+    const pdfBuffer = await this.convertToPdf(updatedContent, 'files/' + outputPath);
     console.log('Output file ' + outputPath + ' has been written successfully.');
+    // const pdfBuffer = await fs.promises.readFile('files/' + outputPath);
     var formdata = new FormData();
-    formdata.append('outputpath', outputPath);
+    formdata.append('outputpath', pdfBuffer);
     // Convert the Buffer to a Blob
     // const blob = new Blob([updatedContent]);
-    formdata.append('file', updatedContent, outputPath);
-    // await fs.promises.writeFile('files/' + outputPath, updatedContent);
+    formdata.append('file', pdfBuffer, outputPath);
 
     const resFile = await axios({
       method: "post",
@@ -260,7 +289,7 @@ export class WordGenService {
       wholesales = await this.wholesaleService.findOne(createwordgenDto.userId.toString()),
       declarations = await this.declarationService.findOne(createwordgenDto.userId.toString());
 
-      let genDocName = createwordgenDto.userId.toString() + '_' + investortypes.label + '.docx',
+      let genDocName = createwordgenDto.userId.toString() + '_' + investortypes.label + '.pdf',
       tempDocName = (fatcas && fatcas.isUscitizen == 'Yes') ? 'template_' + investortypes.label + '_FATCA_Y.docx' : 'template_' + investortypes.label + '_FATCA_N.docx';
     // tempDocName = 'template.docx'; // this is just one for test.
 
@@ -360,7 +389,7 @@ export class WordGenService {
       wholesales = await this.wholesaleService.findOne(updatewordgenDto.userId.toString()),
       declarations = await this.declarationService.findOne(updatewordgenDto.userId.toString());
 
-    let genDocName = updatewordgenDto.userId.toString() + '_' + investortypes.label + '.docx',
+      let genDocName = updatewordgenDto.userId.toString() + '_' + investortypes.label + '.pdf',
       tempDocName = (fatcas && fatcas.isUscitizen == 'Yes') ? 'template_' + investortypes.label + '_FATCA_Y.docx' : 'template_' + investortypes.label + '_FATCA_N.docx';
     // tempDocName = 'template.docx'; // this is just one for test.
 

@@ -18,7 +18,7 @@ export class WordDocGenTemplate {
                 <tbody>
                     <tr>
                         <th>
-                            <img src="https://sbsau.s3.au-central-1.amazonaws.com/email-template-header.png" style="margin: auto; display: block; width: 600px;">
+                            <img src="https://sbs-form-frontend.vercel.app/logo.svg" style="margin: auto; display: block; width: 600px;">
                         </th>
                     </tr>
                     <tr>
