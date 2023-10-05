@@ -20,26 +20,30 @@ export class VerificationService {
   }
   
   async create(createVerificationDto: CreateVerificationDto) {
-    const investor1Sign = this.cb64i(createVerificationDto.investor1Sign);
-    const investor2Sign = this.cb64i(createVerificationDto.investor2Sign);
-    const owner1Sign = this.cb64i(createVerificationDto.owner1Sign);
-    const owner2Sign = this.cb64i(createVerificationDto.owner2Sign);
-    const owner3Sign = this.cb64i(createVerificationDto.owner3Sign);
-    const owner4Sign = this.cb64i(createVerificationDto.owner4Sign);
-    const frontScreen = this.cb64i(createVerificationDto.frontScreen);
-    const backScreen = this.cb64i(createVerificationDto.backScreen);
-    const selectedImage = this.cb64i(createVerificationDto.selectedImage);
     const verification = new this.VerificationModel();
+    const investor1Sign = this.cb64i(createVerificationDto.investor1Sign);
+    const owner1Sign = this.cb64i(createVerificationDto.owner1Sign);
+
+    // console.log('^-^frontScreen : ', createVerificationDto.frontScreen);
+
+    if(createVerificationDto.investor2Sign != 'undefined')
+    verification.investor2Sign = this.cb64i(createVerificationDto.investor2Sign);
+    if(createVerificationDto.owner2Sign != 'undefined')
+    verification.owner2Sign = this.cb64i(createVerificationDto.owner2Sign);
+    if(createVerificationDto.owner3Sign != 'undefined')
+    verification.owner3Sign = this.cb64i(createVerificationDto.owner3Sign);
+    if(createVerificationDto.owner4Sign != 'undefined')
+    verification.owner4Sign = this.cb64i(createVerificationDto.owner4Sign);
+    if(createVerificationDto.frontScreen != undefined)
+    verification.frontScreen = this.cb64i(createVerificationDto.frontScreen);
+    if(createVerificationDto.backScreen != undefined)
+    verification.backScreen = this.cb64i(createVerificationDto.backScreen);
+    if(createVerificationDto.selectedImage != 'undefined')
+    verification.selectedImage = this.cb64i(createVerificationDto.selectedImage);
+    
     verification.investor1Sign = investor1Sign;
-    verification.investor2Sign = investor2Sign;
     verification.owner1Sign = owner1Sign;
-    verification.owner2Sign = owner2Sign;
-    verification.owner3Sign = owner3Sign;
-    verification.owner4Sign = owner4Sign;
-    verification.backScreen = backScreen;
-    verification.frontScreen = frontScreen;
-    verification.selectedImage = selectedImage;
-    console.log('^-^Selected Images : ', selectedImage);
+    // console.log('^-^Selected Images : ', selectedImage);
     verification.investor1 = createVerificationDto.investor1;
     verification.investor2 = createVerificationDto.investor2;
     verification.owner1 = createVerificationDto.owner1;
@@ -61,34 +65,30 @@ export class VerificationService {
   }
 
   async update(id: string, updateVerificationDto: UpdateVerificationDto) {
+    let verificationData : any;
+    const investor1Sign = this.cb64i(updateVerificationDto.investor1Sign);
+    const owner1Sign = this.cb64i(updateVerificationDto.owner1Sign);
 
-    const frontScreen = (updateVerificationDto.frontScreen) ? this.cb64i(updateVerificationDto.frontScreen) : null;
-    const backScreen = (updateVerificationDto.backScreen) ? this.cb64i(updateVerificationDto.backScreen) : null;
-    console.log('^-^Front Screen : ', frontScreen);
-    const verificationData = {
-      investor1Sign: this.cb64i(updateVerificationDto.investor1Sign),
-      investor2Sign: this.cb64i(updateVerificationDto.investor2Sign),
-      owner1Sign: this.cb64i(updateVerificationDto.owner1Sign),
-      owner2Sign: this.cb64i(updateVerificationDto.owner2Sign),
-      owner3Sign: this.cb64i(updateVerificationDto.owner3Sign),
-      owner4Sign: this.cb64i(updateVerificationDto.owner4Sign),
-      selectedImage: this.cb64i(updateVerificationDto.selectedImage),
-      investor1: updateVerificationDto.investor1,
-      investor2: updateVerificationDto.investor2,
-      owner1: updateVerificationDto.owner1,
-      owner2: updateVerificationDto.owner2,
-      owner3: updateVerificationDto.owner3,
-      owner4: updateVerificationDto.owner4,
-      userId: updateVerificationDto.userId
-    };
-  
-    if (backScreen !== null) {
-      verificationData['backScreen'] = backScreen;
-    }
+    // console.log('^-^frontScreen : ', updateVerificationDto.frontScreen);
+
+    if(updateVerificationDto.investor2Sign != 'undefined')
+    verificationData.investor2Sign = this.cb64i(updateVerificationDto.investor2Sign);
+    if(updateVerificationDto.owner2Sign != 'undefined')
+    verificationData.owner2Sign = this.cb64i(updateVerificationDto.owner2Sign);
+    if(updateVerificationDto.owner3Sign != 'undefined')
+    verificationData.owner3Sign = this.cb64i(updateVerificationDto.owner3Sign);
+    if(updateVerificationDto.owner4Sign != 'undefined')
+    verificationData.owner4Sign = this.cb64i(updateVerificationDto.owner4Sign);
+    if(updateVerificationDto.frontScreen != undefined)
+    verificationData.frontScreen = this.cb64i(updateVerificationDto.frontScreen);
+    if(updateVerificationDto.backScreen != undefined)
+    verificationData.backScreen = this.cb64i(updateVerificationDto.backScreen);
+    if(updateVerificationDto.selectedImage != 'undefined')
+    verificationData.selectedImage = this.cb64i(updateVerificationDto.selectedImage);
     
-    if (frontScreen !== null) {
-      verificationData['frontScreen'] = frontScreen;
-    }
+    verificationData.investor1Sign = investor1Sign;
+    verificationData.owner1Sign = owner1Sign;
+
     verificationData.userId = new Types.ObjectId(updateVerificationDto.userId);
     return this.VerificationModel.findByIdAndUpdate(id, { $set: verificationData });
   }
