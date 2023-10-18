@@ -21,6 +21,7 @@ import { DeclarationModule } from './declaration/declaration.module';
 import { AuthModule } from './auth/auth.module';
 import { UserModule } from './user/user.module';
 import { WordGenModule } from './word-gen/word-gen.module';
+import { TestModule } from './test/test.module';
 
 require('dotenv').config();
 console.log('^-^', process.env.MONGO_URI);
@@ -45,6 +46,7 @@ console.log('^-^', process.env.MONGO_URI);
     AuthModule,
     UserModule,
     WordGenModule,
+    TestModule,
   ],
   controllers: [AppController],
   providers: [AppService],
