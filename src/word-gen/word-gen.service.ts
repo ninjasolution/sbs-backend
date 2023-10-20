@@ -284,8 +284,8 @@ export class WordGenService {
     user = { ...user, ...{ docpath: ipfsURL }};
     console.log('^-^Send mail Company2User ');
     await this.mailService.sendCompany2User(user);
-    console.log('^-^Send mail User2Company ');
-    await this.mailService.sendUser2Company(user);
+    // console.log('^-^Send mail User2Company ');
+    // await this.mailService.sendUser2Company(user);
     // console.log('^-^ipfsURL : ', ipfsURL);
     return await resFile.data.IpfsHash;
 
