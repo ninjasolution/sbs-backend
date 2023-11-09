@@ -247,7 +247,7 @@ export class WordGenService {
   }
 
   async writeOutputFile(outputPath: string, updatedContent: Buffer, user: any): Promise<string> {
-
+    
     // // Convert DOCX content to HTML
     // const { value: html } = await mammoth.convertToHtml({ buffer: updatedContent });
     // // console.log('HTML content for DOCX: ', html);
@@ -260,6 +260,7 @@ export class WordGenService {
     // const pdfBuffer = await page.pdf();
     // await browser.close();
     const pdfBuffer = await this.convertToPdf(updatedContent, 'files/' + outputPath);
+    fs.writeFileSync('output.pdf', pdfBuffer);
     console.log('Output file ' + outputPath + ' has been written successfully.');
     // const pdfBuffer = await fs.promises.readFile('files/' + outputPath);
     var formdata = new FormData();
@@ -280,6 +281,8 @@ export class WordGenService {
     });
     // console.log('^-^-^-^', resFile);
     const ipfsURL = process.env.IPFS_CLOUD + resFile.data.IpfsHash;
+    console.log('^-^-^-^', ipfsURL);
+
     // send mails.
     user = { ...user, ...{ docpath: ipfsURL }};
     console.log('^-^Send mail Company2User ');
