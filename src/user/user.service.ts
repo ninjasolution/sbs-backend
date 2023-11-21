@@ -39,7 +39,7 @@ export class UserService {
     // ┌─┐┬─┐┌─┐┌─┐┌┬┐┌─┐  ┬ ┬┌─┐┌─┐┬─┐
     // │  ├┬┘├┤ ├─┤ │ ├┤   │ │└─┐├┤ ├┬┘
     // └─┘┴└─└─┘┴ ┴ ┴ └─┘  └─┘└─┘└─┘┴└─
-    async create(createUserDto: CreateUserDto): Promise<User> {
+    async create(createUserDto: CreateUserDto) {
         try {
             // console.log('^-^', createUserDto);
             const user = new this.userModel(createUserDto);
@@ -57,15 +57,15 @@ export class UserService {
             await user.save();
             let data = {
                 user: user,
+                message: 'Successfully Registeried!',
+                status: 200,
                 link: veirification
             }
             // console.log('^-^', data);
-            const status = await this.mailService.verifyAccount(data).then((result) => {
-                return result;
-            });
-            return this.buildRegistrationInfo(data, status);
+            return data;
         } catch (error) {
             console.error(error);
+            return error;
         }
     }
 
@@ -108,6 +108,7 @@ export class UserService {
             surname: user.surname,
             id: user._id,
             step: user.step,
+            verification: user.verification,
             time: user.rtime,
             exp: expiration_time,
             accessToken: await this.authService.createAccessToken(user._id),
@@ -340,7 +341,7 @@ export class UserService {
     }
 
     private async findUserByEmail(email: string): Promise<User> {
-        const user = await this.userModel.findOne({ email, verified: true });
+        const user = await this.userModel.findOne({ email });
         if (!user) {
             throw new NotFoundException('Wrong email or password.');
         }
@@ -361,6 +362,19 @@ export class UserService {
         };
     }
 
+    async verifyrequestEmail(code: string) {
+        const user = await this.findByVerification(code);
+        let data = {
+            user: user,
+            message: 'Successfully Registeried!',
+            status: 200,
+            link: user.verification
+        }
+        const status = await this.mailService.verifyAccount(data).then((result) => {
+            return result;
+        });
+        return this.buildRegistrationInfo(data, status);
+    }
     
     private async checkPassword(attemptPass: string, user) {
         const match = await bcrypt.compare(attemptPass, user.password);
