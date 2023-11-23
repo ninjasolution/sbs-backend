@@ -99,6 +99,15 @@ export class UserController {
         return await this.userService.verifyCustomerEmail(params.code);
     }
 
+    @Get('verification/:code')
+    @HttpCode(HttpStatus.OK)
+    @ApiOperation({summary: 'Verification User Email'})
+    @ApiOkResponse({})
+    @ApiParam({name: 'code', description: 'code of User'})
+    async verifyrequestEmail(@Param() params) {
+        console.log('^-^verifyrequestEmail: ', params.code);
+        return await this.userService.verifyrequestEmail(params.code);
+    }
 
     // ╔═╗╦ ╦╔╦╗╦ ╦╔═╗╔╗╔╔╦╗╦╔═╗╔═╗╔╦╗╔═╗
     // ╠═╣║ ║ ║ ╠═╣║╣ ║║║ ║ ║║  ╠═╣ ║ ║╣
@@ -155,18 +164,13 @@ export class UserController {
      *
      */
     @Get(':id')
-    @HttpCode(HttpStatus.OK)
-    @UseGuards(AuthGuard('jwt'))
-    // @Roles('admin')
     @ApiBearerAuth()
     @ApiHeader({
-        name: 'Bearer',
-        description: 'the token we need for auth.'
-    })
-    @ApiOperation({summary: 'Get One User',})
-    @ApiParam({name: 'id', description: 'id of User'})
-    @ApiOkResponse({})
+      name: 'Bearer',
+      description: 'the token we need for auth.'
+    })    
     async getOneFeaturedListType(@Param() params) {
+        console.log('^^^user profile,', params.id)
         return await this.userService.getOneUser(params.id);
     }
 
@@ -275,16 +279,11 @@ export class UserController {
      *
      */
     @Put('update-user')
-    @HttpCode(HttpStatus.OK)
-    @ApiOperation({summary: 'Update User data',})
-    @UseGuards(AuthGuard('jwt'))
-    // @Roles('admin')
     @ApiBearerAuth()
     @ApiHeader({
-        name: 'Bearer',
-        description: 'the token we need for auth.'
-    })
-    @ApiOkResponse({})
+      name: 'Bearer',
+      description: 'the token we need for auth.'
+    })    
     async updateUser(@Req() req: Request, @Body() updateUserDto: UpdateUserDto) {
         return await this.userService.updateUser(req, updateUserDto);
     }
