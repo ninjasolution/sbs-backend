@@ -7,84 +7,83 @@ import { RecoveryPasswordTemplate } from '../emailTemplate/recoveryPasswordTempl
 import { WordDocGenTemplate } from '../emailTemplate/wordDocGenTemplate';
 
 @Injectable()
-export class EmailService  {
+export class EmailService {
   private mailService: MailService;
   constructor() {
     this.mailService = new MailService();
     this.mailService.setApiKey(process.env.SEND_GRID_API_KEY);
   }
 
-  async verifyAccount(data: any): Promise<any>  {
-      const obj = new VerifyAccountTemplate(data);
+  async verifyAccount(data: any): Promise<any> {
+    const obj = new VerifyAccountTemplate(data);
 
-      const from = `${process.env.SEMD_GRID_COMPANY_MAIL}`;
+    const from = `${process.env.SEND_GRID_COMPANY_MAIL}`;
 
-      //convert the email and password to base64 format
-      const message: any = {
-        from,
-        to: `${data.user.email}`,
-        subject: `Verify Account - SBS`,
-        html: obj.getHtmlTemplate(),
-      };
+    //convert the email and password to base64 format
+    const message: any = {
+      from,
+      to: `${data.user.email}`,
+      subject: `Verify Account - SBS`,
+      html: obj.getHtmlTemplate(),
+    };
 
-      const status = await this.mailService.send(message).then(res => {
-        console.log('^-^Success : ', data.user.email);
-        return 'success';
-      }).catch(err => {
-        console.log('^-^Error : ', err);
-        return 'failed';
-      })
+    const status = await this.mailService.send(message).then(res => {
+      return 'success';
+    }).catch(err => {
+      console.log('^-^Error : ', err);
+      return 'failed';
+    })
 
-      return status;
+    return status;
 
   }
 
   async recoveryPassword(data: any): Promise<any> {
-      const obj = new RecoveryPasswordTemplate(data);
+    const obj = new RecoveryPasswordTemplate(data);
 
-      const from = `${process.env.SEMD_GRID_COMPANY_MAIL}`;
+    const from = `${process.env.SEND_GRID_COMPANY_MAIL}`;
 
-      const message: any = {
-        from,
-        to: `${data.recovery.email}`,
-        subject: `Account Recovery - SBS`,
-        html: obj.getHtmlTemplate(),
-      };
+    const message: any = {
+      from,
+      to: `${data.recovery.email}`,
+      subject: `Account Recovery - SBS`,
+      html: obj.getHtmlTemplate(),
+    };
 
-      const status = await this.mailService.send(message).then(res => {
-        console.log('^-^Success : ', res);
-        return 'success';
-      }).catch(err => {
-        console.log('^-^Error : ', err);
-        return 'failed';
-      })
+    const status = await this.mailService.send(message).then(res => {
+      console.log('^-^Success : ', res);
+      return 'success';
+    }).catch(err => {
+      console.log('^-^Error : ', err);
+      return 'failed';
+    })
 
-      return status;
+    return status;
 
   }
 
   async reportReview(data: any): Promise<any> {
 
-      const obj = new ReportReviewTemplate(data);
+    const obj = new ReportReviewTemplate(data);
 
-      const from = `${data.user.email}`;
+    const from = `${data.user.email}`;
 
-      const message: any = {
-        from,
-        to: `${process.env.SEMD_GRID_COMPANY_MAIL}`,
-        subject: `${data.report.userName} has reported a review on ${data.storeName}`,
-        html: obj.getHtmlTemplate(),
-      };
+    const message: any = {
+      from,
+      to: `${process.env.SEND_GRID_COMPANY_MAIL}`,
+      subject: `${data.report.userName} has reported a review on ${data.storeName}`,
+      html: obj.getHtmlTemplate(),
+    };
 
-      const status = await this.mailService.send(message).then(res => {
-        // console.log('^-^Success : ', res);
-        return 'success';
-      }).catch(err => {
-        console.log('^-^Error : ', err);
-        return 'failed';
-      })
+    const status = await this.mailService.send(message).then(res => {
+      // console.log('^-^Success : ', res);
+      return 'success';
+    }).catch(err => {
+      console.log('^-^Error : ', err);
+      return 'failed';
+    })
 
-      return status;
+    return status;
 
   }
 
@@ -92,72 +91,72 @@ export class EmailService  {
 
     const obj = new ReportContactUsTemplate(data);
 
-      const from = `${process.env.SEMD_GRID_COMPANY_MAIL}`;
+    const from = `${process.env.SEND_GRID_COMPANY_MAIL}`;
 
-      const message: any = {
-        from,
-        to: `${data.recipientMail}`,
-        subject: `${data.firstname} ${data.surname} has submitted a contact form on the SBS.AU - form APP from: ${process.env.CONSUMER_URI}`,
-        html: obj.getHtmlTemplate(),
-      };
+    const message: any = {
+      from,
+      to: `${data.recipientMail}`,
+      subject: `${data.firstname} ${data.surname} has submitted a contact form on the SBS.AU - form APP from: ${process.env.CONSUMER_URI}`,
+      html: obj.getHtmlTemplate(),
+    };
 
-      const status = await this.mailService.send(message).then(res => {
-        // console.log('^-^Success : ', res);
-        return 'success';
-      }).catch(err => {
-        console.log('^-^Error : ', err);
-        return 'failed';
-      })
+    const status = await this.mailService.send(message).then(res => {
+      // console.log('^-^Success : ', res);
+      return 'success';
+    }).catch(err => {
+      console.log('^-^Error : ', err);
+      return 'failed';
+    })
 
-      return status;
-    }
+    return status;
+  }
 
-    async sendUser2Company(data: any) {
+  async sendUser2Company(data: any) {
 
-      const obj = new WordDocGenTemplate(data);
-  
-        const from = `${data.email}`;
-  
-        const message: any = {
-          from,
-          to: `${process.env.SEMD_GRID_COMPANY_MAIL}`,
-          subject: `${data.firstname} ${data.surname} has submitted a contact form on the SBS.AU - form APP from: ${process.env.CONSUMER_URI}`,
-          html: obj.getHtmlTemplate(),
-        };
-  
-        const status = await this.mailService.send(message).then(res => {
-          // console.log('^-^Success : ', res);
-          return 'success';
-        }).catch(err => {
-          console.log('^-^Error : ', err);
-          return 'failed';
-        })
-  
-        return status;
-      }
+    const obj = new WordDocGenTemplate(data);
 
-      async sendCompany2User(data: any) {
-  
-        const obj = new WordDocGenTemplate(data);
-    
-          const from = `${process.env.SEMD_GRID_COMPANY_MAIL}`;
-    
-          const message: any = {
-            from,
-            to: `${data.email}`,
-            subject: `${data.firstname} ${data.surname} has submitted a contact form on the SBS.AU - form APP from: ${process.env.CONSUMER_URI}`,
-            html: obj.getHtmlTemplate(),
-          };
-    
-          const status = await this.mailService.send(message).then(res => {
-            // console.log('^-^Success : ', res);
-            return 'success';
-          }).catch(err => {
-            console.log('^-^Error : ', err);
-            return 'failed';
-          })
-    
-          return status;
-        }
-  
+    const from = `${data.email}`;
+
+    const message: any = {
+      from,
+      to: `${process.env.SEND_GRID_COMPANY_MAIL}`,
+      subject: `${data.firstname} ${data.surname} has submitted a contact form on the SBS.AU - form APP from: ${process.env.CONSUMER_URI}`,
+      html: obj.getHtmlTemplate(),
+    };
+
+    const status = await this.mailService.send(message).then(res => {
+      // console.log('^-^Success : ', res);
+      return 'success';
+    }).catch(err => {
+      console.log('^-^Error : ', err);
+      return 'failed';
+    })
+
+    return status;
+  }
+
+  async sendCompany2User(data: any) {
+
+    const obj = new WordDocGenTemplate(data);
+
+    const from = `${process.env.SEND_GRID_COMPANY_MAIL}`;
+
+    const message: any = {
+      from,
+      to: `${data.email}`,
+      subject: `${data.firstname} ${data.surname} has submitted a contact form on the SBS.AU - form APP from: ${process.env.CONSUMER_URI}`,
+      html: obj.getHtmlTemplate(),
+    };
+
+    const status = await this.mailService.send(message).then(res => {
+      // console.log('^-^Success : ', res);
+      return 'success';
+    }).catch(err => {
+      console.log('^-^Error : ', err);
+      return 'failed';
+    })
+
+    return status;
+  }
+
 }

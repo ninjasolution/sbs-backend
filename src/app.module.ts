@@ -24,7 +24,6 @@ import { WordGenModule } from './word-gen/word-gen.module';
 import { TestModule } from './test/test.module';
 
 require('dotenv').config();
-console.log('^-^', process.env.MONGO_URI);
 @Module({
   imports: [
     MongooseModule.forRoot(process.env.MONGO_URI),

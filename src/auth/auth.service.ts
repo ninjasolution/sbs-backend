@@ -3,13 +3,13 @@ import { Injectable, UnauthorizedException, NotFoundException, BadRequestExcepti
 import { JwtService } from '@nestjs/jwt';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { sign, verify } from 'jsonwebtoken';
-import { User } from '../user/interfaces/user.interface';
+import { User } from '../user/entities/user.entity';
 import { RefreshToken } from './interfaces/refresh-token.interface';
 import { v4 } from 'uuid';
 import { Request } from 'express';
 import { getClientIp } from 'request-ip';
 import Cryptr from 'cryptr';
+
 require('dotenv').config();
 
 /**
@@ -29,9 +29,9 @@ export class AuthService {
     this.cryptr = new Cryptr(process.env.ENCRYPT_JWT_SECRET);
   }
 
-  async createAccessToken(userId: string) {
-    const accessToken = sign({userId}, process.env.JWT_SECRET , { expiresIn: process.env.JWT_EXPIRATION });
-    return this.encryptText(accessToken);
+  async createAccessToken(userId: string, userName: string) {
+    const payload = { id: userId, email: userName };
+    return await this.jwtService.signAsync(payload)
   }
 
   async createRefreshToken(req: Request, userId) {
@@ -47,7 +47,7 @@ export class AuthService {
   }
 
   async findRefreshToken(token: string) {
-    const refreshToken = await this.refreshTokenModel.findOne({refreshToken: token});
+    const refreshToken = await this.refreshTokenModel.findOne({ refreshToken: token });
     if (!refreshToken) {
       throw new UnauthorizedException('User has been logged out.');
     }
@@ -55,47 +55,11 @@ export class AuthService {
   }
 
   async validateUser(jwtPayload: JwtPayload): Promise<any> {
-    const user = await this.userModel.findOne({_id: jwtPayload.userId, verified: true});
+    const user = await this.userModel.findOne({ _id: jwtPayload.id, verified: true });
     if (!user) {
       throw new UnauthorizedException('User not found.');
     }
     return user;
-  }
-
-  //   ┬┬ ┬┌┬┐  ┌─┐─┐ ┬┌┬┐┬─┐┌─┐┌─┐┌┬┐┌─┐┬─┐
-  //   ││││ │   ├┤ ┌┴┬┘ │ ├┬┘├─┤│   │ │ │├┬┘
-  //  └┘└┴┘ ┴   └─┘┴ └─ ┴ ┴└─┴ ┴└─┘ ┴ └─┘┴└─
-  private jwtExtractor(request) {
-    let token = null;
-    if (request.header('x-token')) {
-    token = request.get('x-token');
-  } else if (request.headers.authorization) {
-    token = request.headers.authorization.replace('Bearer ', '').replace(' ', '');
-  } else if (request.body.token) {
-    token = request.body.token.replace(' ', '');
-  }
-    if (request.query.token) {
-    token = request.body.token.replace(' ', '');
-  }
-    const cryptr = new Cryptr(process.env.ENCRYPT_JWT_SECRET);
-    if (token) {
-      try {
-        token = cryptr.decrypt(token);
-      } catch (err) {
-        throw new BadRequestException('Bad request.');
-      }
-  }
-  this.user_token = token;
-  return token;
-}
-
-  // ***********************
-  // ╔╦╗╔═╗╔╦╗╦ ╦╔═╗╔╦╗╔═╗
-  // ║║║║╣  ║ ╠═╣║ ║ ║║╚═╗
-  // ╩ ╩╚═╝ ╩ ╩ ╩╚═╝═╩╝╚═╝
-  // ***********************
-  returnJwtExtractor() {
-    return this.jwtExtractor;
   }
 
   getIp(req: Request): string {

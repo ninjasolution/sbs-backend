@@ -14,13 +14,14 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { VerifyUuidDto } from './dto/verify-uuid.dto';
 import { RefreshAccessTokenDto } from './dto/refresh-access-token.dto';
-import { ForgotPassword } from './interfaces/forgot-password.interface';
-import { User } from './interfaces/user.interface';
-import { time } from 'console';
+import { ForgotPassword } from './entities/forgot-password.entity';
+import { User } from './entities/user.entity';
 import { ChangeUserPasswordDto } from './dto/change-user-password.dto';
 import { ChangeUserStepDto } from './dto/change-user-step.dto';
 import { ChangeUserRtimeDto } from './dto/change-user-rtime.dto';
 import { ChangeUserImagedDto } from './dto/change-user-image.dto';
+import { Token } from './entities/token.entity';
+import crypto from "crypto"
 
 @Injectable()
 export class UserService {
@@ -32,6 +33,7 @@ export class UserService {
     constructor(
         @InjectModel('User') private readonly userModel: Model<User>,
         @InjectModel('ForgotPassword') private readonly forgotPasswordModel: Model<ForgotPassword>,
+        @InjectModel('Token') private readonly tokenModel: Model<Token>,
         private readonly authService: AuthService,
         public mailService: EmailService,
     ) { }
@@ -41,7 +43,6 @@ export class UserService {
     // └─┘┴└─└─┘┴ ┴ ┴ └─┘  └─┘└─┘└─┘┴└─
     async create(createUserDto: CreateUserDto) {
         try {
-            // console.log('^-^', createUserDto);
             const user = new this.userModel(createUserDto);
             if (!user.displayname) {
                 user.displayname = user.email;
@@ -61,7 +62,6 @@ export class UserService {
                 status: 200,
                 link: veirification
             }
-            // console.log('^-^', data);
             return data;
         } catch (error) {
             console.error(error);
@@ -72,15 +72,15 @@ export class UserService {
     // ┬  ┬┌─┐┬─┐┬┌─┐┬ ┬  ┌─┐┌┬┐┌─┐┬┬
     // └┐┌┘├┤ ├┬┘│├┤ └┬┘  ├┤ │││├─┤││
     //  └┘ └─┘┴└─┴└   ┴   └─┘┴ ┴┴ ┴┴┴─┘
-    async verifyEmail(req: Request, verifyUuidDto: VerifyUuidDto) {
-        const user = await this.findByVerification(verifyUuidDto.verification);
-        await this.setUserAsVerified(user);
-        return {
-            name: user.displayname,
-            email: user.email,
-            accessToken: await this.authService.createAccessToken(user._id),
-            refreshToken: await this.authService.createRefreshToken(req, user._id),
-        };
+    async verifyEmail(req: Request, token: string) {
+
+        const _token = await this.tokenModel.findOneAndUpdate({ userId: req["user"]["id"], token: token, type: "Email", status: false }, { $set: { status: true } });
+        if (!_token) {
+            throw new NotFoundException('Not found token.');
+        }
+
+        const user = await this.userModel.findOneAndUpdate({ _id: req["user"]["id"] }, { $set: { verified: true } }, { new: true })
+        return this.buildUserInfo(user);
     }
 
     // ┬  ┌─┐┌─┐┬┌┐┌
@@ -94,10 +94,8 @@ export class UserService {
         this.isUserBlocked(user);
         await this.checkPassword(loginUserDto.password, user);
         await this.passwordsAreMatch(user);
-        // this.isRoleBlocked(user);
         var date = new Date(),
             date2 = new Date(date);
-        console.log('^-^CreatedTime : ', date);
         date2.setMinutes(date.getMinutes() + parseInt(process.env.JWT_EXPIRATION_MINUTES));
         var expiration_time = date2;
         var resData = {
@@ -109,15 +107,37 @@ export class UserService {
             id: user._id,
             step: user.step,
             verification: user.verification,
+            verified: user.verified,
             time: user.rtime,
             exp: expiration_time,
-            accessToken: await this.authService.createAccessToken(user._id),
+            accessToken: await this.authService.createAccessToken(user._id, user.email),
             refreshToken: await this.authService.createRefreshToken(req, user._id),
         }
-        // console.log('^-^', resData);
-
         return resData;
     }
+
+    async requestEmailVerify(req: Request) {
+        const user = await this.findUserByEmail(req["user"]["email"])
+        const token = new this.tokenModel({
+            userId: user.id,
+            type: "Email",
+            token: crypto.randomBytes(32).toString("hex"),
+            status: false
+        });
+        await token.save();
+
+        let data = {
+            user: user,
+            message: 'Successfully Registeried!',
+            status: 200,
+            link: token.token
+        }
+        // const status = await this.mailService.verifyAccount(data).then((result) => {
+        //     return result;
+        // });
+        return this.buildRegistrationInfo(data, true);
+    }
+
 
     // ┬─┐┌─┐┌─┐┬─┐┌─┐┌─┐┬ ┬  ┌─┐┌─┐┌─┐┌─┐┌─┐┌─┐  ┌┬┐┌─┐┬┌─┌─┐┌┐┌
     // ├┬┘├┤ ├┤ ├┬┘├┤ └─┐├─┤  ├─┤│  │  ├┤ └─┐└─┐   │ │ │├┴┐├┤ │││
@@ -129,7 +149,7 @@ export class UserService {
             throw new BadRequestException('Bad request');
         }
         return {
-            accessToken: await this.authService.createAccessToken(user._id),
+            accessToken: await this.authService.createAccessToken(user._id, user.email),
         };
     }
 
@@ -137,16 +157,14 @@ export class UserService {
     // ├┤ │ │├┬┘│ ┬│ │ │   ├─┘├─┤└─┐└─┐││││ │├┬┘ ││
     // └  └─┘┴└─└─┘└─┘ ┴   ┴  ┴ ┴└─┘└─┘└┴┘└─┘┴└──┴┘
     async forgotPassword(req: Request, createForgotPasswordDto: CreateForgotPasswordDto) {
-        await this.findByEmail(createForgotPasswordDto.email);
-        await this.saveForgotPassword(req, createForgotPasswordDto);
-        const forgotpassword = await this.findVerificationCodeByEmail(createForgotPasswordDto);
+        
+        const forgotpassword = await this.saveForgotPassword(req, createForgotPasswordDto);
         const data = {
-            recovery : {
+            recovery: {
                 email: forgotpassword.email,
                 code: forgotpassword.verification
             }
         }
-        // console.log('^-^ Forgot Password Saved. ', data);
         const status = await this.mailService.recoveryPassword(data).then((result) => {
             return result;
         });
@@ -205,7 +223,7 @@ export class UserService {
 
         await this.userModel.updateOne({ email: changeUserPasswordDto.email }, user);
 
-        return this.buildUpdatingPasswordInfo(user);
+        return this.buildUserInfo(user);
 
     }
 
@@ -264,7 +282,7 @@ export class UserService {
         user.firstname = updateUserDto.firstname;
         user.surname = updateUserDto.surname;
         user.phone = updateUserDto.phone;
-        console.log('^-^Updated User: ', user);
+        user.postal = updateUserDto.postal;
 
 
         await this.userModel.updateOne({ _id: updateUserDto.userId }, user);
@@ -310,35 +328,22 @@ export class UserService {
         return userRegistrationInfo;
     }
 
-    private buildUpdatingPasswordInfo(user): any {
+    private buildUserInfo(user): any {
         const userPasswordUpdatingInfo = {
-            name: user.name,
+            displayname: user.displayname,
             email: user.email,
+            roles: user.roles,
+            firstname: user.firstname,
+            surname: user.surname,
+            id: user._id,
+            step: user.step,
+            verification: user.verification,
             verified: user.verified,
+            time: user.rtime,
         };
         return userPasswordUpdatingInfo;
     }
 
-    private async findByVerification(verification: string): Promise<User> {
-        const user = await this.userModel.findOne({ verification, verified: false, verificationExpires: { $gt: new Date() } });
-        if (!user) {
-            throw new BadRequestException('Bad request.');
-        }
-        return user;
-    }
-
-    private async findByEmail(email: string): Promise<User> {
-        const user = await this.userModel.findOne({ email, verified: true });
-        if (!user) {
-            throw new NotFoundException('Email not found.');
-        }
-        return user;
-    }
-
-    private async setUserAsVerified(user) {
-        user.verified = true;
-        await user.save();
-    }
 
     private async findUserByEmail(email: string): Promise<User> {
         const user = await this.userModel.findOne({ email });
@@ -347,38 +352,11 @@ export class UserService {
         }
         return user;
     }
-    
-    // ┬  ┬┌─┐┬─┐┬┌─┐┬ ┬  ┌─┐┬ ┬┌─┐┌┬┐┌─┐┌┬┐┌─┐┬─┐  ┌─┐┌┬┐┌─┐┬┬  
-    // └┐┌┘├┤ ├┬┘│├┤ └┬┘  │  │ │└─┐ │ │ ││││├┤ ├┬┘  ├┤ │││├─┤││  
-    //  └┘ └─┘┴└─┴└   ┴   └─┘└─┘└─┘ ┴ └─┘┴ ┴└─┘┴└─  └─┘┴ ┴┴ ┴┴┴─┘
-    async verifyCustomerEmail(code: string) {
 
-        const user = await this.findByVerification(code);
-        await this.setUserAsVerified(user);
-        return {
-            name: user.displayname,
-            email: user.email,
-            verify: user.verified
-        };
-    }
 
-    async verifyrequestEmail(code: string) {
-        const user = await this.findByVerification(code);
-        let data = {
-            user: user,
-            message: 'Successfully Registeried!',
-            status: 200,
-            link: user.verification
-        }
-        const status = await this.mailService.verifyAccount(data).then((result) => {
-            return result;
-        });
-        return this.buildRegistrationInfo(data, status);
-    }
-    
+
     private async checkPassword(attemptPass: string, user) {
         const match = await bcrypt.compare(attemptPass, user.password);
-        // console.log('^-^Compare Pass: ', attemptPass, user.password, match);
         if (!match) {
             await this.passwordsDoNotMatch(user);
             throw new NotFoundException('Wrong email or password.');
@@ -389,12 +367,6 @@ export class UserService {
     private isUserBlocked(user) {
         if (user.blockExpires > Date.now()) {
             throw new ConflictException('User has been blocked try later.');
-        }
-    }
-
-    private isRoleBlocked(user) {
-        if (user.roles.some(role => role === 'customer')) {
-            throw new ConflictException('Wrong User or Email!.');
         }
     }
 
@@ -417,7 +389,7 @@ export class UserService {
         await user.save();
     }
 
-    private async saveForgotPassword(req: Request, createForgotPasswordDto: CreateForgotPasswordDto) {
+    private async saveForgotPassword(req: Request, createForgotPasswordDto: CreateForgotPasswordDto): Promise<ForgotPassword> {
         const forgotPassword = await this.forgotPasswordModel.create({
             email: createForgotPasswordDto.email,
             verification: v4(),
@@ -426,7 +398,7 @@ export class UserService {
             browser: this.authService.getBrowserInfo(req),
             country: this.authService.getCountry(req),
         });
-        await forgotPassword.save();
+        return await forgotPassword.save();
     }
 
     private async findForgotPasswordByUuid(verifyUuidDto: VerifyUuidDto): Promise<ForgotPassword> {

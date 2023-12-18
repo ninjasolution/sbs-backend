@@ -8,7 +8,7 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { VerifyUuidDto } from './dto/verify-uuid.dto';
 import { UserService } from './user.service';
-import { AuthGuard, PassportModule } from '@nestjs/passport';
+import { PassportModule } from '@nestjs/passport';
 import { RefreshAccessTokenDto } from './dto/refresh-access-token.dto';
 import { ChangeUserPasswordDto } from './dto/change-user-password.dto';
 import { ChangeUserStepDto } from './dto/change-user-step.dto';
@@ -23,16 +23,17 @@ import {
     ApiHeader,
     ApiOperation,
     ApiParam
-    } from '@nestjs/swagger';
+} from '@nestjs/swagger';
 import { RolesGuard } from 'src/auth/guards/roles.guard';
+import { AuthGuard } from 'src/auth/auth.guard';
 
 @ApiTags('User')
 @Controller('user')
 @UseGuards(RolesGuard)
 export class UserController {
     constructor(
-        private readonly userService: UserService,
-        ) {}
+        private readonly userService: UserService
+    ) { }
 
     // ╔═╗╦═╗╔═╗╔═╗╔╦╗╔═╗  ╦ ╦╔═╗╔═╗╦═╗
     // ║  ╠╦╝║╣ ╠═╣ ║ ║╣   ║ ║╚═╗║╣ ╠╦╝
@@ -48,14 +49,34 @@ export class UserController {
      */
     @Post()
     @HttpCode(HttpStatus.OK)
-    @ApiOperation({summary: 'Register user',})
+    @ApiOperation({ summary: 'Register user', })
     @ApiOkResponse({})
     // @ApiCreatedResponse({})
-    // @UseGuards(AuthGuard('jwt'))
+    // @UseGuards(AuthGuard)
     // @Roles('admin')
     async register(@Body() createUserDto: CreateUserDto) {
         // console.log('^-^', createUserDto);
         return await this.userService.create(createUserDto);
+    }
+
+    // ╔═╗╦ ╦╔╦╗╦ ╦╔═╗╔╗╔╔╦╗╦╔═╗╔═╗╔╦╗╔═╗
+    // ╠═╣║ ║ ║ ╠═╣║╣ ║║║ ║ ║║  ╠═╣ ║ ║╣
+    // ╩ ╩╚═╝ ╩ ╩ ╩╚═╝╝╚╝ ╩ ╩╚═╝╩ ╩ ╩ ╚═╝
+    /**
+     *
+     * This method will log in an user with his credentials
+     *
+     * @param {LoginUserDto} - object with the user data
+     * 
+     * @returns {LoginUserDto } - This method will return an object with the user data
+     *
+     */
+    @Post('login')
+    @HttpCode(HttpStatus.OK)
+    @ApiOperation({ summary: 'Login User', })
+    @ApiOkResponse({})
+    async login(@Req() req: Request, @Body() loginUserDto: LoginUserDto) {
+        return await this.userService.login(req, loginUserDto);
     }
 
     /**
@@ -71,7 +92,7 @@ export class UserController {
     // @HttpCode(HttpStatus.OK)
     // @ApiOperation({summary: 'Verify Email',})
     // @ApiOkResponse({})
-    // // @UseGuards(AuthGuard('jwt'))
+    // // @UseGuards(AuthGuard)
     // // @Roles('admin')
     // async verifyEmail(@Req() req: Request, @Body() verifyUuidDto: VerifyUuidDto) {
     //     console.log('^-^verify-email: ', verifyUuidDto);
@@ -89,46 +110,23 @@ export class UserController {
      * @param {string} - The verification code used to verify this email address.
      *
      */
-    @Get('validation/:code')
+    @Get('verify-email/:code')
+    @UseGuards(AuthGuard)
     @HttpCode(HttpStatus.OK)
-    @ApiOperation({summary: 'Verify User Email'})
+    @ApiOperation({ summary: 'Verify User Email' })
     @ApiOkResponse({})
-    @ApiParam({name: 'code', description: 'code of User'})
-    async verifyEmail(@Param() params) {
-        console.log('^-^verify-email: ', params.code);
-        return await this.userService.verifyCustomerEmail(params.code);
+    @ApiParam({ name: 'code', description: 'code of User' })
+    async verifyEmail(@Req() req: Request, @Param() params) {
+        return await this.userService.verifyEmail(req, params.code);
     }
 
-    @Get('verification/:code')
-    @HttpCode(HttpStatus.OK)
-    @ApiOperation({summary: 'Verification User Email'})
-    @ApiOkResponse({})
-    @ApiParam({name: 'code', description: 'code of User'})
-    async verifyrequestEmail(@Param() params) {
-        console.log('^-^verifyrequestEmail: ', params.code);
-        return await this.userService.verifyrequestEmail(params.code);
+    @Get('request-email-verify')
+    @UseGuards(AuthGuard)
+    async verifyrequestEmail(@Req() req: Request) {
+        return await this.userService.requestEmailVerify(req);
     }
 
-    // ╔═╗╦ ╦╔╦╗╦ ╦╔═╗╔╗╔╔╦╗╦╔═╗╔═╗╔╦╗╔═╗
-    // ╠═╣║ ║ ║ ╠═╣║╣ ║║║ ║ ║║  ╠═╣ ║ ║╣
-    // ╩ ╩╚═╝ ╩ ╩ ╩╚═╝╝╚╝ ╩ ╩╚═╝╩ ╩ ╩ ╚═╝
-    /**
-     *
-     * This method will log in an user with his credentials
-     *
-     * @param {LoginUserDto} - object with the user data
-     * 
-     * @returns {LoginUserDto } - This method will return an object with the user data
-     *
-     */
-    @Post('login')
-    @HttpCode(HttpStatus.OK)
-    @ApiOperation({summary: 'Login User',})
-    @ApiOkResponse({})
-    async login(@Req() req: Request, @Body() loginUserDto: LoginUserDto) {
-        // console.log('^-^', loginUserDto);
-        return await this.userService.login(req, loginUserDto);
-    }
+
 
     /**
      *
@@ -141,14 +139,14 @@ export class UserController {
      */
     @Get()
     @HttpCode(HttpStatus.OK)
-    @UseGuards(AuthGuard('jwt'))
+    @UseGuards(AuthGuard)
     @Roles('admin')
     @ApiBearerAuth()
     @ApiHeader({
         name: 'Bearer',
         description: 'the token we need for auth.'
     })
-    @ApiOperation({summary: 'Get All Users',})
+    @ApiOperation({ summary: 'Get All Users', })
     @ApiOkResponse({})
     async getAllFeaturedListTypes() {
         return await this.userService.getAllUsers();
@@ -166,9 +164,9 @@ export class UserController {
     @Get(':id')
     @ApiBearerAuth()
     @ApiHeader({
-      name: 'Bearer',
-      description: 'the token we need for auth.'
-    })    
+        name: 'Bearer',
+        description: 'the token we need for auth.'
+    })
     async getOneFeaturedListType(@Param() params) {
         console.log('^^^user profile,', params.id)
         return await this.userService.getOneUser(params.id);
@@ -187,20 +185,20 @@ export class UserController {
         } - This method will return an object with name, email and verified
      *
      */
-        @Post('update-password')
-        @HttpCode(HttpStatus.OK)
-        @ApiOperation({summary: 'Password User Reset',})
-        @UseGuards(AuthGuard('jwt'))
-        @Roles('admin', 'retailer')
-        @ApiBearerAuth()
-        @ApiHeader({
-            name: 'Bearer',
-            description: 'the token we need for auth.'
-        })
-        @ApiOkResponse({})
-        async updatePassword(@Req() req: Request, @Body() changeUserPasswordDto: ChangeUserPasswordDto) {
-            return await this.userService.updatePassword(req, changeUserPasswordDto);
-        }
+    @Post('update-password')
+    @HttpCode(HttpStatus.OK)
+    @ApiOperation({ summary: 'Password User Reset', })
+    @UseGuards(AuthGuard)
+    @Roles('admin', 'retailer')
+    @ApiBearerAuth()
+    @ApiHeader({
+        name: 'Bearer',
+        description: 'the token we need for auth.'
+    })
+    @ApiOkResponse({})
+    async updatePassword(@Req() req: Request, @Body() changeUserPasswordDto: ChangeUserPasswordDto) {
+        return await this.userService.updatePassword(req, changeUserPasswordDto);
+    }
 
     /**
      *
@@ -217,8 +215,8 @@ export class UserController {
      */
     @Post('update-step')
     @HttpCode(HttpStatus.OK)
-    @ApiOperation({summary: 'Step User Reset',})
-    @UseGuards(AuthGuard('jwt'))
+    @ApiOperation({ summary: 'Step User Reset', })
+    @UseGuards(AuthGuard)
     // @Roles('admin', 'retailer')
     @ApiBearerAuth()
     @ApiHeader({
@@ -229,11 +227,11 @@ export class UserController {
     async updateStep(@Req() req: Request, @Body() changeUserStepDto: ChangeUserStepDto) {
         return await this.userService.updateStep(req, changeUserStepDto);
     }
-    
+
     @Post('update-time')
     @HttpCode(HttpStatus.OK)
-    @ApiOperation({summary: 'Step User Reset',})
-    @UseGuards(AuthGuard('jwt'))
+    @ApiOperation({ summary: 'Step User Reset', })
+    @UseGuards(AuthGuard)
     // @Roles('admin', 'retailer')
     @ApiBearerAuth()
     @ApiHeader({
@@ -244,7 +242,7 @@ export class UserController {
     async updateRtime(@Req() req: Request, @Body() changeUserRtimeDto: ChangeUserRtimeDto) {
         return await this.userService.updateRtime(req, changeUserRtimeDto);
     }
-    
+
     /**
      *
      * This method will update an user image
@@ -256,8 +254,8 @@ export class UserController {
      */
     @Put('update-image')
     @HttpCode(HttpStatus.OK)
-    @ApiOperation({summary: 'Update User image',})
-    @UseGuards(AuthGuard('jwt'))
+    @ApiOperation({ summary: 'Update User image', })
+    @UseGuards(AuthGuard)
     @Roles('admin', 'retailer')
     @ApiBearerAuth()
     @ApiHeader({
@@ -281,9 +279,9 @@ export class UserController {
     @Put('update-user')
     @ApiBearerAuth()
     @ApiHeader({
-      name: 'Bearer',
-      description: 'the token we need for auth.'
-    })    
+        name: 'Bearer',
+        description: 'the token we need for auth.'
+    })
     async updateUser(@Req() req: Request, @Body() updateUserDto: UpdateUserDto) {
         return await this.userService.updateUser(req, updateUserDto);
     }
@@ -299,7 +297,7 @@ export class UserController {
      */
     @Post('refresh-access-token')
     @HttpCode(HttpStatus.CREATED)
-    @ApiOperation({summary: 'Refresh Access Token with refresh token',})
+    @ApiOperation({ summary: 'Refresh Access Token with refresh token', })
     @ApiCreatedResponse({})
     async refreshAccessToken(@Body() refreshAccessTokenDto: RefreshAccessTokenDto) {
         return await this.userService.refreshAccessToken(refreshAccessTokenDto);
@@ -316,7 +314,7 @@ export class UserController {
      */
     @Post('forgot-password')
     @HttpCode(HttpStatus.OK)
-    @ApiOperation({summary: 'Forgot password',})
+    @ApiOperation({ summary: 'Forgot password', })
     @ApiOkResponse({})
     async forgotPassword(@Req() req: Request, @Body() createForgotPasswordDto: CreateForgotPasswordDto) {
         return await this.userService.forgotPassword(req, createForgotPasswordDto);
@@ -333,7 +331,7 @@ export class UserController {
      */
     @Post('forgot-password-verify')
     @HttpCode(HttpStatus.OK)
-    @ApiOperation({summary: 'Verfiy forget password code',})
+    @ApiOperation({ summary: 'Verfiy forget password code', })
     @ApiOkResponse({})
     async forgotPasswordVerify(@Req() req: Request, @Body() verifyUuidDto: VerifyUuidDto) {
         return await this.userService.forgotPasswordVerify(req, verifyUuidDto);
@@ -350,7 +348,7 @@ export class UserController {
      */
     @Post('reset-password')
     @HttpCode(HttpStatus.OK)
-    @ApiOperation({summary: 'Reset password after verify reset password',})
+    @ApiOperation({ summary: 'Reset password after verify reset password', })
     // @ApiBearerAuth()
     // @ApiHeader({
     //     name: 'Bearer',
@@ -363,10 +361,10 @@ export class UserController {
 
 
     @Get('data')
-    @UseGuards(AuthGuard('jwt'))
+    @UseGuards(AuthGuard)
     @Roles('admin')
     @ApiBearerAuth()
-    @ApiOperation({summary: 'A private route for check the auth',})
+    @ApiOperation({ summary: 'A private route for check the auth', })
     @ApiHeader({
         name: 'Bearer',
         description: 'the token we need for auth.'

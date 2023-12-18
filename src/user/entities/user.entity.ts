@@ -1,18 +1,20 @@
-export class User {
+import { Document } from 'mongoose';
+
+export interface User extends Document {
     firstname: string;
     surname: string;
     displayname: string;
     gender: string;
     email: string;
     password: string;
+    roles: [string];
     phone: string;
+    postal: number;
     step: number;
     rtime: number;
-    roles: [string];
     verification: string;
     verified: boolean;
     verificationExpires: Date;
-    loginAttempts: Number;
-    blockExpires: Date;
-  }
-  
+    loginAttempts?: number;
+    blockExpires?: Date;
+}

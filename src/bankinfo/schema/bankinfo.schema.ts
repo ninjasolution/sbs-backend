@@ -1,5 +1,4 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { IsUUID } from 'class-validator';
 import { Document, Types } from 'mongoose';
 
 export type BankinfoDocument = Bankinfo & Document;
