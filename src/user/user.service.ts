@@ -263,13 +263,8 @@ export class UserService {
     }
 
     //UPDATE USER
-    async updateUser(req: Request, updateUserDto: UpdateUserDto) {
-        const user = await this.userModel.findById(updateUserDto.userId);
-        // console.log('^-^updateUserDto : ', updateUserDto);
-        if (updateUserDto.password != undefined) {
-            const new_password_hashed = await bcrypt.hash(updateUserDto.password, 10);
-            user.password = new_password_hashed;
-        }
+    async updateUser(req: Request, updateUserDto: UpdateUserDto): Promise<User> {
+        const user = await this.userModel.findById(req["user"]["id"]);
         if (updateUserDto.email != user.email) {
             await this.isEmailUnique(updateUserDto.email);
             user.email = updateUserDto.email;
@@ -278,17 +273,15 @@ export class UserService {
             await this.isDisplayNameUnique(updateUserDto.displayname);
             user.displayname = updateUserDto.displayname;
         }
-
+        
         user.firstname = updateUserDto.firstname;
         user.surname = updateUserDto.surname;
         user.phone = updateUserDto.phone;
         user.postal = updateUserDto.postal;
 
+        const newUser = await this.userModel.findOneAndUpdate({ _id: user._id }, {$set: user}, { new: true });
 
-        await this.userModel.updateOne({ _id: updateUserDto.userId }, user);
-
-        return { update: true };
-
+        return this.buildUserInfo(newUser);
     }
     // ┌─┐┬─┐   ┌┬┐┌─┐┌─┐┌┬┐┌─┐┌┬┐  ┌─┐┌─┐┬─┐┬  ┬┬┌─┐┌─┐
     // ├─┘├┬┘    │ ├┤ │   │ ├┤  ││  └─┐├┤ ├┬┘└┐┌┘││  ├┤
@@ -336,6 +329,7 @@ export class UserService {
             firstname: user.firstname,
             surname: user.surname,
             id: user._id,
+            postal: user.postal,
             step: user.step,
             verification: user.verification,
             verified: user.verified,

@@ -8,7 +8,6 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { VerifyUuidDto } from './dto/verify-uuid.dto';
 import { UserService } from './user.service';
-import { PassportModule } from '@nestjs/passport';
 import { RefreshAccessTokenDto } from './dto/refresh-access-token.dto';
 import { ChangeUserPasswordDto } from './dto/change-user-password.dto';
 import { ChangeUserStepDto } from './dto/change-user-step.dto';
@@ -168,7 +167,6 @@ export class UserController {
         description: 'the token we need for auth.'
     })
     async getOneFeaturedListType(@Param() params) {
-        console.log('^^^user profile,', params.id)
         return await this.userService.getOneUser(params.id);
     }
 
@@ -277,11 +275,7 @@ export class UserController {
      *
      */
     @Put('update-user')
-    @ApiBearerAuth()
-    @ApiHeader({
-        name: 'Bearer',
-        description: 'the token we need for auth.'
-    })
+    @UseGuards(AuthGuard)
     async updateUser(@Req() req: Request, @Body() updateUserDto: UpdateUserDto) {
         return await this.userService.updateUser(req, updateUserDto);
     }

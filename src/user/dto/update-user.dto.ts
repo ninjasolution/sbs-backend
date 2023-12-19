@@ -1,4 +1,4 @@
-import { IsNotEmpty, MinLength, MaxLength, IsEmail, IsString, IsNumber } from 'class-validator';
+import { IsNotEmpty, MinLength, MaxLength, IsEmail, IsString, IsNumber, isString } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class UpdateUserDto {
@@ -100,10 +100,9 @@ export class UpdateUserDto {
   @ApiProperty({
     example: '1234',
     description: 'The postal code ',
-    format: 'number',
+    format: 'string',
   })
-  @IsNumber()
-  @MaxLength(6)
-  readonly postal: number;
+  @IsString()
+  readonly postal: string;
 
 }

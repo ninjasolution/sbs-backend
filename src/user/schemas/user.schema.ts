@@ -35,7 +35,7 @@ export class User {
   phone: string;
 
   @Prop()
-  postal: number;
+  postal: string;
 
   @Prop()
   step: number;

@@ -9,7 +9,7 @@ export interface User extends Document {
     password: string;
     roles: [string];
     phone: string;
-    postal: number;
+    postal: string;
     step: number;
     rtime: number;
     verification: string;
