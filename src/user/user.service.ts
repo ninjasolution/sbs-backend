@@ -94,10 +94,7 @@ export class UserService {
         this.isUserBlocked(user);
         await this.checkPassword(loginUserDto.password, user);
         await this.passwordsAreMatch(user);
-        var date = new Date(),
-            date2 = new Date(date);
-        date2.setMinutes(date.getMinutes() + parseInt(process.env.JWT_EXPIRATION_MINUTES));
-        var expiration_time = date2;
+        const expTime: number = Number.parseInt(process.env.JWT_EXPIRATION_MINUTES || "30")
         var resData = {
             displayname: user.displayname,
             email: user.email,
@@ -109,7 +106,7 @@ export class UserService {
             verification: user.verification,
             verified: user.verified,
             time: user.rtime,
-            exp: expiration_time,
+            exp: expTime * 60000,
             accessToken: await this.authService.createAccessToken(user._id, user.email),
             refreshToken: await this.authService.createRefreshToken(req, user._id),
         }
