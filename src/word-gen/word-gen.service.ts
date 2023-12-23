@@ -56,10 +56,8 @@ function flattenObject(obj, prefix = '', flattened = {}) {
   for (let [key, value] of Object.entries(obj._doc)) {
     var newPrefix = prefix ? `${prefix}.${key}` : key;
     if(key == '__v' || key == 'userId') continue;
-    // console.log('^-^ : ', prefix, '.', key, ': ');
     switch (prefix) {
       case "investorCs":
-        // console.log('^-^' + newPrefix + ' =', value);
         if(key == "cbusinessdetail") flattened[newPrefix] = value
         else flattened[`${prefix}.cbusinessdetail`] = '';
         if(key == "cofficesuburb") flattened[newPrefix] = value
@@ -114,7 +112,6 @@ function flattenObject(obj, prefix = '', flattened = {}) {
             flattened[prefix + '.' + item] = '';
           })
           statusval.map((item, index) => {
-            // console.log('^-^', prefix + '.' + item);
             if (item == 'investing') flattened[prefix + '.' + item] = '☒';
             else if (item == 'proinvestor') flattened[prefix + '.' + item] = '☒';
             else if (item == 'netasset') flattened[prefix + '.' + item] = '☒';
@@ -131,7 +128,6 @@ function flattenObject(obj, prefix = '', flattened = {}) {
           const dataUrl = `data:image/png;base64,${bufferstring}`;
           flattened[newPrefix] = dataUrl;
         } else {
-          // console.log(value);
           let defaultval = ['name2', 'date2', 'title2', 'type2', 'other2'];
           defaultval.map(item => {
             flattened[prefix + '.' + item] = '';
@@ -469,9 +465,9 @@ export class WordGenService {
     }
 
 
-    // console.log('^-^Before Create Content : ', investortypes);
+    console.log('^-^Before Create Content : ', investortypes);
     let user: any = await this.contactdetailService.findOne(updatewordgenDto.userId.toString());
-    // console.log('^-^UserInfo : ', user.userId);
+    console.log('^-^UserInfo : ', user.userId);
 
     let updatedcontent = await this.editWordDocument(tempDocName, docxData);
 
