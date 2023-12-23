@@ -371,10 +371,7 @@ export class WordGenService {
       }
     }
 
-    // console.log('^-^Before Create Content : ', investortypes);
     let user: any = await this.contactdetailService.findOne(createwordgenDto.userId.toString());
-    // console.log('^-^UserInfo : ', user.userId);
-    // Get the contents of the given docx file.
     let updatedcontent = await this.editWordDocument(tempDocName, docxData);
     createwordgenDto.orientation = await this.writeOutputFile(genDocName, updatedcontent, user.userId._doc);
 
