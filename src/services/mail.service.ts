@@ -67,10 +67,11 @@ export class EmailService {
     const obj = new ContactRequestTemplate(data);
 
     const from = `${process.env.SEND_GRID_COMPANY_MAIL}`;
+    const to = `${process.env.CONTACT_RECEIVE_MAIL}`;
 
     const message: any = {
       from,
-      to: `${data.email}`,
+      to,
       subject: `Contact Request - SBS`,
       html: obj.getHtmlTemplate(),
     };
