@@ -22,6 +22,7 @@ import { ChangeUserRtimeDto } from './dto/change-user-rtime.dto';
 import { ChangeUserImagedDto } from './dto/change-user-image.dto';
 import { Token } from './entities/token.entity';
 import crypto from "crypto"
+import { ContactRequestDto } from './dto/contact-request.dto';
 
 @Injectable()
 export class UserService {
@@ -129,10 +130,24 @@ export class UserService {
             status: 200,
             link: token.token
         }
-        // const status = await this.mailService.verifyAccount(data).then((result) => {
-        //     return result;
-        // });
-        return this.buildRegistrationInfo(data, true);
+        const status = await this.mailService.verifyAccount(data).then((result) => {
+            return result;
+        });
+        return this.buildRegistrationInfo(data, status);
+    }
+
+    async requestContact(dto: ContactRequestDto) {
+        
+        let data = {
+            email: dto.email,
+            firstName: dto.firstName,
+            companyName: dto.companyName,
+            message: dto.message,
+        }
+        const status = await this.mailService.requestContact(data).then((result) => {
+            return result;
+        });
+        return this.buildRegistrationInfo(data, status);
     }
 
 

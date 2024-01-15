@@ -5,6 +5,7 @@ import { ReportContactUsTemplate } from '../emailTemplate/reportContactUsTemplat
 import { VerifyAccountTemplate } from '../emailTemplate/verifyAccountTemplate';
 import { RecoveryPasswordTemplate } from '../emailTemplate/recoveryPasswordTemplate';
 import { WordDocGenTemplate } from '../emailTemplate/wordDocGenTemplate';
+import { ContactRequestTemplate } from 'src/emailTemplate/contactRequestTemplate';
 
 @Injectable()
 export class EmailService {
@@ -47,6 +48,30 @@ export class EmailService {
       from,
       to: `${data.recovery.email}`,
       subject: `Account Recovery - SBS`,
+      html: obj.getHtmlTemplate(),
+    };
+
+    const status = await this.mailService.send(message).then(res => {
+      console.log('^-^Success : ', res);
+      return 'success';
+    }).catch(err => {
+      console.log('^-^Error : ', err);
+      return 'failed';
+    })
+
+    return status;
+
+  }
+
+  async requestContact(data: any): Promise<any> {
+    const obj = new ContactRequestTemplate(data);
+
+    const from = `${process.env.SEND_GRID_COMPANY_MAIL}`;
+
+    const message: any = {
+      from,
+      to: `${data.email}`,
+      subject: `Contact Request - SBS`,
       html: obj.getHtmlTemplate(),
     };
 

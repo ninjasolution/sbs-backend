@@ -25,6 +25,7 @@ import {
 } from '@nestjs/swagger';
 import { RolesGuard } from 'src/auth/guards/roles.guard';
 import { AuthGuard } from 'src/auth/auth.guard';
+import { ContactRequestDto } from './dto/contact-request.dto';
 
 @ApiTags('User')
 @Controller('user')
@@ -125,6 +126,12 @@ export class UserController {
         return await this.userService.requestEmailVerify(req);
     }
 
+    @Post('request-contact')
+    @HttpCode(HttpStatus.OK)
+    @ApiOkResponse({})
+    async requestContact(@Body() contactRequestDto: ContactRequestDto) {
+        return await this.userService.requestContact(contactRequestDto);
+    }
 
 
     /**
@@ -158,7 +165,7 @@ export class UserController {
      * @param {} - no parameter require
      * 
      * @returns {} - This method will return an object with all of the users data
-     *
+     *but don't log out my original whatsapp account
      */
     @Get(':id')
     @ApiBearerAuth()
@@ -276,6 +283,7 @@ export class UserController {
      */
     @Put('update-user')
     @UseGuards(AuthGuard)
+    @ApiOkResponse({})
     async updateUser(@Req() req: Request, @Body() updateUserDto: UpdateUserDto) {
         return await this.userService.updateUser(req, updateUserDto);
     }

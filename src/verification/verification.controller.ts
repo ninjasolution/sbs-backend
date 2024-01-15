@@ -1,9 +1,10 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseInterceptors, UploadedFile, Req, UploadedFiles } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseInterceptors, UploadedFile, Req, UploadedFiles, UseGuards } from '@nestjs/common';
 import { VerificationService } from './verification.service';
 import { CreateVerificationDto } from './dto/create-verification.dto';
 import { UpdateVerificationDto } from './dto/update-verification.dto';
 import { ApiBearerAuth, ApiHeader } from '@nestjs/swagger';
 import { FileInterceptor, FilesInterceptor } from '@nestjs/platform-express';
+import { AuthGuard } from 'src/auth/auth.guard';
 
 interface CustomRequest extends Request {
   files: any[];
@@ -44,19 +45,22 @@ export class VerificationController {
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
+  @UseGuards(AuthGuard)
+  findOne(@Req() req: Request, @Param('id') id: string) {
+    console.log('^-^req : ', req["user"]["id"]);
     return this.verificationService.findOne(id);
   }
 
   @Patch(':id')
+  @UseGuards(AuthGuard)
   @ApiBearerAuth()
   @ApiHeader({
     name: 'Bearer',
     description: 'the token we need for auth.'
   })
   @UseInterceptors(FilesInterceptor('files', 2)) // Set limits to 2 files
-  update(@Param('id') id: string, @Body() updateVerificationDto: UpdateVerificationDto, @UploadedFiles() files) {
-    // console.log('^-^Files : ', files);
+  update(@Req() req: Request, @Param('id') id: string, @Body() updateVerificationDto: UpdateVerificationDto, @UploadedFiles() files) {
+    console.log('^-^req : ', req["user"]["id"]);
     if (Array.isArray(files)) {
       files.forEach((file, index) => {
         const { originalname, buffer } = file;

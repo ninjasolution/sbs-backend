@@ -5,9 +5,9 @@
 export class ReportContactUsTemplate {
     html: String = "";
     consumer_uri = process.env.CONSUMER_URI;
-    
-    constructor(data: any) { 
-     this.html = `<head>
+
+    constructor(data: any) {
+        this.html = `<head>
             <meta charset="utf-8"/>
             <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
             <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -61,10 +61,10 @@ export class ReportContactUsTemplate {
                     </tr>
                 </tbody>
             </table>
-            </body>`; 
+            </body>`;
     }
-    
-    getHtmlTemplate(){
+
+    getHtmlTemplate() {
         return this.html;
     }
 }
