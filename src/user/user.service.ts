@@ -144,10 +144,10 @@ export class UserService {
             companyName: dto.companyName,
             message: dto.message,
         }
-        const status = await this.mailService.requestContact(data).then((result) => {
+        await this.mailService.requestContact(data).then((result) => {
             return result;
         });
-        return this.buildRegistrationInfo(data, status);
+        return this.buildUserInfo(data);
     }
 
 
